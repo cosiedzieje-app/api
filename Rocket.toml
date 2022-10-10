@@ -1,0 +1,2 @@
+[global.databases.baza]
+url = "mysql://main:root@localhost/baza"
