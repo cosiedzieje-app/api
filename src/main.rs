@@ -1,24 +1,15 @@
-#[macro_use] extern crate rocket;
-
-use rocket::{form::Form, fs::FileServer};
-use rocket::http::Status;
-
-use rocket_db_pools::{sqlx, Database};
-
-use anyhow;
-
+pub mod structs;
+use crate::structs::*;
 use rocket::fs::relative;
+use rocket::fs::FileServer;
+use rocket::serde::json::Json;
+
+#[macro_use]
+extern crate rocket;
 
 #[derive(Database)]
 #[database("baza")]
-struct Db(sqlx::MySqlPool);
-
-#[derive(FromForm)]
-struct User<'r> {
-    email: &'r str,
-    name: &'r str,
-    password: &'r str,
-}
+pub struct Db(sqlx::MySqlPool);
 // CREATE DATABASE baza;
 // CREATE TABLE `users` (
 //  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -27,32 +18,39 @@ struct User<'r> {
 //  `password` varchar(255) NOT NULL,
 //  PRIMARY KEY (`id`)
 // ) DEFAULT CHARSET=utf8mb4;
-impl User<'_>{
-    async fn add(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
-        let rows_affected = sqlx::query("INSERT INTO users (email, name, password) VALUES (?, ?, ?)")
-            .bind(self.email)
-            .bind(self.name)
-            .bind(self.password)
-            .execute(db)
-            .await?
-            .rows_affected();
 
-        Ok(rows_affected > 0)
-    }
-}
-
-#[post("/register", data = "<user>")]
-async fn register(db: &Db, user: Form<User<'_>>) -> Status {
-    match user.add(&db.0).await{
-        Err(e) => {error_!("Internal server error: {}", e); Status::InternalServerError},
-        Ok(false) =>{ info_!("Zero rows affected, user not added"); Status::InternalServerError},
-        Ok(true) => { info_!("User added"); Status::Ok },
+#[post("/register", format = "json", data = "<user>")]
+async fn register(db: &Db, user: Json<User<'_>>) -> JsonCustomError {
+    match user.add_to_db(&db.0).await {
+        Err(e) => match e.to_string().split(" ").last().unwrap_or_default() {
+            "'email'" => CustomError::error("Provided email is already in use"),
+            "'name'" => CustomError::error("Provided name is already in use"),
+            _ => CustomError::error("Some data entered by you is wrond"),
+        },
+        Ok(false) => {
+            warn_!("Zero rows affected, user not added");
+            CustomError::error("Internal server error, we dont know what happened")
+        }
+        Ok(true) => {
+            info_!("User added");
+            CustomError::ok()
+        }
     }
 }
 
 #[post("/login", data = "<user>")]
-fn login(db: &Db, user: Form<User<'_>>) {
-
+async fn login(db: &Db, user: Json<UserLogin<'_>>) -> JsonCustomError {
+    match user.login(&db.0).await {
+        Err(_) => CustomError::error("We fucked up"),
+        Ok(false) => {
+            warn_!("Invalid credentials");
+            CustomError::error("Invalid credentials")
+        }
+        Ok(true) => {
+            info_!("Logged Succesfully with id gonwo");
+            CustomError::ok()
+        }
+    }
 }
 
 #[launch]
