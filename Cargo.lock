@@ -1768,6 +1768,7 @@ dependencies = [
  "bcrypt",
  "lettre",
  "nanoid",
+ "rand",
  "rocket",
  "rocket_db_pools",
  "serde",
