@@ -1,5 +1,3 @@
-use bcrypt::{hash_with_salt, DEFAULT_COST};
-use rand::Rng;
 pub use rocket::serde::json::Json;
 pub use rocket_db_pools::{sqlx, Database};
 
@@ -7,7 +5,7 @@ use anyhow;
 
 use serde::{Deserialize, Serialize};
 
-use rand::{Rng};
+use rand::Rng;
 
 use bcrypt::{DEFAULT_COST, hash_with_salt, verify};
 
