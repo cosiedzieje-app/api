@@ -13,9 +13,9 @@
         Password:<input type="text" name="login.password" id="login.password">
         <button>LOL</button>
     </form> -->
-
+    
     <script>
-        (async () => {
+        /*(async () => {
             const rawResponse = await fetch('/login', {
               method: 'POST',
               headers: {
@@ -26,12 +26,35 @@
                 {
                         name: "chuj",
                         password: "dup"})
+                  name: "1234",
+                  password: "s"})
                 }
             );
             const content = await rawResponse.json();
           
             console.log(content);
-          })();
+          })();*/
+
+        (async () => {
+            const rawResponse = await fetch('/register', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(
+                {
+                    login: {
+                        name: "sdffds",
+                        password: "toor"
+                    }, 
+                    email: 'piotr.adfsdsf.pl'})
+                }
+            );
+            const content = await rawResponse.json();
+          
+            console.log(content);
+        })();
     </script>
 </body>
 </html>

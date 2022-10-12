@@ -7,6 +7,10 @@ use anyhow;
 
 use serde::{Deserialize, Serialize};
 
+use rand::{Rng};
+
+use bcrypt::{DEFAULT_COST, hash_with_salt, verify};
+
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct UserLogin<'r> {
@@ -60,10 +64,10 @@ impl UserLogin<'_> {
             .fetch_optional(db)
             .await?;
 
-        match logged {
-            Some(_) => Ok(true),
-            None => Ok(false),
-        }
+         match logged {
+             Some(_) => Ok(true),
+             None => Ok(false),
+         }
     }
 }
 
