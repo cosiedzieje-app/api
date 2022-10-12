@@ -10,14 +10,6 @@ extern crate rocket;
 #[derive(Database)]
 #[database("baza")]
 pub struct Db(sqlx::MySqlPool);
-// CREATE DATABASE baza;
-// CREATE TABLE `users` (
-//  `id` int(11) NOT NULL AUTO_INCREMENT,
-//  `email` varchar(255) NOT NULL,
-//  `name` varchar(255) NOT NULL,
-//  `password` varchar(255) NOT NULL,
-//  PRIMARY KEY (`id`)
-// ) DEFAULT CHARSET=utf8mb4;
 
 #[post("/register", format = "json", data = "<user>")]
 async fn register(db: &Db, user: Json<User<'_>>) -> JsonCustomError {

@@ -6,6 +6,10 @@ use anyhow;
 
 use serde::{Deserialize, Serialize};
 
+use rand::{Rng};
+
+use bcrypt::{DEFAULT_COST, hash_with_salt, verify};
+
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct UserLogin<'r> {
@@ -64,12 +68,22 @@ impl UserLogin<'_> {
 
 impl User<'_> {
     pub async fn add_to_db(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
+        let salt = {
+            let rand_string: Vec<u8> = rand::thread_rng()
+                .sample_iter(&rand::distributions::Alphanumeric)
+                .take(16)
+                .collect();
+            rand_string
+        };
+        let copy_salt: [u8; 16] = salt.clone().try_into().unwrap();
+        let hashed_pass = hash_with_salt(self.login.password.as_bytes(), DEFAULT_COST, copy_salt)?;
+
         let rows_affected =
-            sqlx::query("INSERT INTO users (email, name, password,salt) VALUES (?, ?, ?,?)")
+            sqlx::query("INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?)")
                 .bind(self.email)
                 .bind(self.login.name)
-                .bind(self.login.password)
-                .bind("sul")
+                .bind(hashed_pass.to_string())
+                .bind(salt)
                 .execute(db)
                 .await?
                 .rows_affected();
