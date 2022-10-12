@@ -1,5 +1,6 @@
+use bcrypt::{hash_with_salt, DEFAULT_COST};
+use rand::Rng;
 pub use rocket::serde::json::Json;
-use rocket_db_pools::sqlx::{query, Row};
 pub use rocket_db_pools::{sqlx, Database};
 
 use anyhow;
@@ -46,23 +47,27 @@ impl CustomError {
 }
 pub type JsonCustomError = Json<CustomError>;
 pub type CustomResult<T> = Result<T, Json<CustomError>>;
+
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
-        // let salt = sqlx::query!("SELECT salt as salt FROM users WHERE name = ?", self.name)
-        //     .fetch_optional(db)
-        //     .await?
-        //     .salt;
-        // let logged = sqlx::query("SELECT id FROM users WHERE name = ? AND password = ?")
-        //     .bind(self.name)
-        //     .bind(self.password)
-        //     .fetch_optional(db)
-        //     .await?;
+        let salt: (String,) = sqlx::query_as("SELECT salt as salt FROM users WHERE name = ?")
+            .bind(self.name)
+            .fetch_one(db)
+            .await?;
 
-        // match logged {
-        //     Some(_) => Ok(true),
-        //     None => Ok(false),
-        // }
-        Ok(true)
+        let salt: [u8; 16] = salt.0.into_bytes().try_into().unwrap();
+        let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
+
+        let logged = sqlx::query("SELECT id FROM users WHERE name = ? AND password = ?")
+            .bind(self.name)
+            .bind(hashed_pass)
+            .fetch_optional(db)
+            .await?;
+
+         match logged {
+             Some(_) => Ok(true),
+             None => Ok(false),
+         }
     }
 }
 

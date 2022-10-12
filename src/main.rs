@@ -3,7 +3,6 @@ use crate::structs::*;
 use rocket::fs::relative;
 use rocket::fs::FileServer;
 use rocket::serde::json::Json;
-
 #[macro_use]
 extern crate rocket;
 
