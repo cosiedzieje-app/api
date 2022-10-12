@@ -48,8 +48,7 @@ pub type JsonCustomError = Json<CustomError>;
 pub type CustomResult<T> = Result<T, Json<CustomError>>;
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
-        let salt = sqlx::query!("SELECT salt as salt FROM users WHERE name = ?")
-            .bind(self.name)
+        let salt = sqlx::query!("SELECT salt as salt FROM users WHERE name = ?", self.name)
             .fetch_optional(db)
             .await?
             .salt;

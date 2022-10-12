@@ -24,14 +24,35 @@
               },
               body: JSON.stringify(
                 {
-                        name: "1234",
-                        password: "s"})
+                  name: "1234",
+                  password: "s"})
                 }
             );
             const content = await rawResponse.json();
           
             console.log(content);
           })();
+
+        (async () => {
+            const rawResponse = await fetch('/register', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(
+                {
+                    login: {
+                        name: "Pidfsfdsotr",
+                        password: "toor"
+                    }, 
+                    email: 'piotr.dsf.pl'})
+                }
+            );
+            const content = await rawResponse.json();
+          
+            console.log(content);
+        })();
     </script>
 </body>
 </html>
