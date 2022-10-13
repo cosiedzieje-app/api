@@ -1,2 +1,2 @@
-[global.databases.baza]
-url = "mysql://main:root@localhost/baza"
+[global.databases.somsiad]
+url = "mysql://cursor:s0ms1a$@localhost/somsiad"

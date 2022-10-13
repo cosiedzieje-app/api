@@ -15,26 +15,8 @@
     </form> -->
     
     <script>
-        /*(async () => {
-            const rawResponse = await fetch('/login', {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(
-                {
-                        name: "chuj",
-                        password: "dup"})
-                  name: "1234",
-                  password: "s"})
-                }
-            );
-            const content = await rawResponse.json();
-          
-            console.log(content);
-          })();*/
-
+        (async () => {
+    console.log("Trying to register:");
         (async () => {
             const rawResponse = await fetch('/register', {
               method: 'POST',
@@ -45,16 +27,37 @@
               body: JSON.stringify(
                 {
                     login: {
-                        name: "sdffds",
+                        name: "root",
                         password: "toor"
                     }, 
-                    email: 'piotr.adfsdsf.pl'})
+                    email: 'example@gmail.com'})
                 }
             );
             const content = await rawResponse.json();
           
             console.log(content);
-        })();
+          })();
+    </script>
+
+    <script>
+    console.log("Trying to login:");
+        (async () => {
+            const rawResponse = await fetch('/login', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(
+                {
+                        name: "root",
+                        password: "toor"})
+                }
+            );
+            const content = await rawResponse.json();
+          
+            console.log(content);
+          })();
     </script>
 </body>
 </html>

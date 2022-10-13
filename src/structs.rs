@@ -24,11 +24,11 @@ pub struct User<'r> {
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
-pub struct CustomError {
+pub struct SomsiadStatus {
     status: String,
     error: String,
 }
-impl CustomError {
+impl SomsiadStatus {
     pub fn error(error: &str) -> Json<Self> {
         Json(Self {
             error: error.to_string(),
@@ -43,8 +43,8 @@ impl CustomError {
         })
     }
 }
-pub type JsonCustomError = Json<CustomError>;
-pub type CustomResult<T> = Result<T, Json<CustomError>>;
+pub type JsonSomsiadStatus = Json<SomsiadStatus>;
+pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
@@ -71,15 +71,12 @@ impl UserLogin<'_> {
 
 impl User<'_> {
     pub async fn add_to_db(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
-        let salt = {
-            let rand_string: Vec<u8> = rand::thread_rng()
-                .sample_iter(&rand::distributions::Alphanumeric)
-                .take(16)
-                .collect();
-            rand_string
-        };
-        let copy_salt: [u8; 16] = salt.clone().try_into().unwrap();
-        let hashed_pass = hash_with_salt(self.login.password.as_bytes(), DEFAULT_COST, copy_salt)?;
+        let salt = rand::thread_rng()
+            .sample_iter(&rand::distributions::Alphanumeric)
+            .take(16)
+            .collect::<Vec<u8>>();
+        let salt_copy: [u8; 16] = salt.clone().try_into().unwrap();
+        let hashed_pass = hash_with_salt(self.login.password.as_bytes(), DEFAULT_COST, salt_copy)?;
 
         let rows_affected =
             sqlx::query("INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?)")

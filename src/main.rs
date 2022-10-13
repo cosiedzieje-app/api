@@ -7,39 +7,39 @@ use rocket::serde::json::Json;
 extern crate rocket;
 
 #[derive(Database)]
-#[database("baza")]
+#[database("somsiad")]
 pub struct Db(sqlx::MySqlPool);
 
 #[post("/register", format = "json", data = "<user>")]
-async fn register(db: &Db, user: Json<User<'_>>) -> JsonCustomError {
+async fn register(db: &Db, user: Json<User<'_>>) -> JsonSomsiadStatus {
     match user.add_to_db(&db.0).await {
         Err(e) => match e.to_string().split(" ").last().unwrap_or_default() {
-            "'email'" => CustomError::error("Provided email is already in use"),
-            "'name'" => CustomError::error("Provided name is already in use"),
-            _ => CustomError::error("Some data entered by you is wrond"),
+            "'email'" => SomsiadStatus::error("Provided email is already in use"),
+            "'name'" => SomsiadStatus::error("Provided name is already in use"),
+            _ => SomsiadStatus::error("Some data entered by you is wrong"),
         },
         Ok(false) => {
             warn_!("Zero rows affected, user not added");
-            CustomError::error("Internal server error, we dont know what happened")
+            SomsiadStatus::error("Internal server error, we dont know what happened")
         }
         Ok(true) => {
             info_!("User added");
-            CustomError::ok()
+            SomsiadStatus::ok()
         }
     }
 }
 
 #[post("/login", data = "<user>")]
-async fn login(db: &Db, user: Json<UserLogin<'_>>) -> JsonCustomError {
+async fn login(db: &Db, user: Json<UserLogin<'_>>) -> JsonSomsiadStatus {
     match user.login(&db.0).await {
-        Err(_) => CustomError::error("We fucked up"),
+        Err(_) => SomsiadStatus::error("Unexpected error occured during login!"),
         Ok(false) => {
             warn_!("Invalid credentials");
-            CustomError::error("Invalid credentials")
+            SomsiadStatus::error("Invalid credentials")
         }
         Ok(true) => {
-            info_!("Logged Succesfully with id gonwo");
-            CustomError::ok()
+            info_!("Logged Succesfully with id: (some id)");
+            SomsiadStatus::ok()
         }
     }
 }
