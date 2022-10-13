@@ -17,6 +17,7 @@ nanoid = "0.4.0"
 lettre = { version = "0.10.1", features = [ "tokio1-native-tls", "tokio1", "sendmail-transport", "serde" ] }
 anyhow = "1.0.51"
 rand = "0.8.5"
+validator = { version = "0.16.0", features = ["derive"] }
 
 
 

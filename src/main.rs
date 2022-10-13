@@ -1,9 +1,10 @@
 pub mod structs;
 use crate::structs::*;
+use nanoid::format;
 use rocket::fs::relative;
 use rocket::fs::FileServer;
-use rocket::log::private::info;
 use rocket::serde::json::Json;
+use validator::ValidationErrors;
 #[macro_use]
 extern crate rocket;
 
@@ -13,6 +14,11 @@ pub struct Db(sqlx::MySqlPool);
 
 #[post("/register", format = "json", data = "<user>")]
 async fn register(db: &Db, user: Json<UserRegister<'_>>) -> JsonSomsiadStatus {
+    if let Err(e) = user.validate() {
+        return SomsiadStatus::errors(e.errors().into_iter()
+        .map(|(field, _)| field.to_string()).collect());
+    }
+
     match user.add_to_db(&db.0).await {
         Err(e) => match e.to_string().split(" ").last().unwrap_or_default() {
             "'email'" => SomsiadStatus::error("Provided email is already in use"),

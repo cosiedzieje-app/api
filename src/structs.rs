@@ -2,7 +2,7 @@ use std::ops::Add;
 
 pub use rocket::serde::json::Json;
 pub use rocket_db_pools::{sqlx, Database};
-
+pub use validator::{Validate};
 use anyhow;
 
 use serde::{Deserialize, Serialize};
@@ -11,31 +11,34 @@ use rand::Rng;
 
 use bcrypt::{DEFAULT_COST, hash_with_salt};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 #[serde(crate = "rocket::serde")]
 pub struct UserLogin<'r> {
     name: &'r str,
     password: &'r str,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 #[serde(crate = "rocket::serde")]
 struct Address<'r> {
     street: &'r str,
+    #[validate(length(min=6, max=6))]
     #[serde(rename = "postalCode")]
     postal_code: &'r str,
     country: &'r str,
     number: u32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 #[serde(crate = "rocket::serde")]
 pub struct UserRegister<'r> {
     login: UserLogin<'r>,
     name: &'r str,
     surname: &'r str,
+    #[validate(email)]
     email: &'r str,
     sex: char,
+    #[validate]
     address: Address<'r>,
     reputation: u32
 }
@@ -44,19 +47,26 @@ pub struct UserRegister<'r> {
 #[serde(crate = "rocket::serde")]
 pub struct SomsiadStatus {
     status: String,
-    error: String,
+    errors: Vec<String>,
 }
 impl SomsiadStatus {
+    pub fn errors(errors: Vec<String>) -> Json<Self> {
+        Json(Self {
+            errors: errors,
+            status: "error".to_string(),
+        })
+    }
+
     pub fn error(error: &str) -> Json<Self> {
         Json(Self {
-            error: error.to_string(),
+            errors: vec![error.to_string()],
             status: "error".to_string(),
         })
     }
 
     pub fn ok() -> Json<Self> {
         Json(Self {
-            error: "".to_string(),
+            errors: Vec::new(),
             status: "ok".to_string(),
         })
     }
