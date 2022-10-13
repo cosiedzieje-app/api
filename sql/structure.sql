@@ -40,7 +40,7 @@ create user 'cursor'@'%' identified by 's0ms1a$';
 grant all privileges on somsiad.* to 'cursor'@'%';
 /* Example address JSON:
 {
-  "adress": {
+  "address": {
     "postalCode": "41-200",
     "street": "Jagiellonska",
     "number": 13,

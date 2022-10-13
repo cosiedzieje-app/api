@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 pub use rocket::serde::json::Json;
 pub use rocket_db_pools::{sqlx, Database};
 
@@ -7,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use rand::Rng;
 
-use bcrypt::{DEFAULT_COST, hash_with_salt, verify};
+use bcrypt::{DEFAULT_COST, hash_with_salt};
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -15,11 +17,26 @@ pub struct UserLogin<'r> {
     name: &'r str,
     password: &'r str,
 }
+
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
-pub struct User<'r> {
+struct Address<'r> {
+    street: &'r str,
+    postalCode: &'r str,
+    country: &'r str,
+    number: u32,
+}
+
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct UserRegister<'r> {
     login: UserLogin<'r>,
+    name: &'r str,
+    surname: &'r str,
     email: &'r str,
+    sex: char,
+    address: Address<'r>,
+    reputation: u32
 }
 
 #[derive(Serialize)]
@@ -69,8 +86,9 @@ impl UserLogin<'_> {
     }
 }
 
-impl User<'_> {
+impl UserRegister<'_> {
     pub async fn add_to_db(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
+        //thread_rng is stored in thread local storage, so noticable performance impact is not expected
         let salt = rand::thread_rng()
             .sample_iter(&rand::distributions::Alphanumeric)
             .take(16)

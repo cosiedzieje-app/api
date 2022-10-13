@@ -7,15 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <!-- <form action="/register" method="post">
-        Email:<input type="text" name="email" id="email">
-        Name:<input type="text" name="login.name" id="login.name">
-        Password:<input type="text" name="login.password" id="login.password">
-        <button>LOL</button>
-    </form> -->
-    
     <script>
-    console.log("Trying to register:");
         (async () => {
             const rawResponse = await fetch('/register', {
               method: 'POST',
@@ -24,22 +16,33 @@
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(
-                {
+                  {
                     login: {
                         name: "root",
                         password: "toor"
                     }, 
-                    email: 'example@gmail.com'})
-                }
+                    email: 'example@gmail.com',
+                    name: "Paweł",
+                    surname: "Kowalski",
+                    sex: 'M',
+                    reputation: 1337,
+                    address: {
+                      postalCode: "41-200",
+                      street: "Jagiellonska",
+                      number: 13,
+                      country: "Poland"
+                    }
+                  }
+                )
+              }
             );
             const content = await rawResponse.json();
           
-            console.log(content);
+            console.log("Register response: ",content);
           })();
     </script>
 
     <script>
-    console.log("Trying to login:");
         (async () => {
             const rawResponse = await fetch('/login', {
               method: 'POST',
@@ -55,7 +58,7 @@
             );
             const content = await rawResponse.json();
           
-            console.log(content);
+            console.log("Login response: ", content);
           })();
     </script>
 </body>
