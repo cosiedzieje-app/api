@@ -1813,8 +1813,8 @@ dependencies = [
  "rocket",
  "rocket_db_pools",
  "serde",
- "validator",
  "serde_json",
+ "validator",
 ]
 
 [[package]]

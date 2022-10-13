@@ -15,7 +15,7 @@ pub struct UserLogin<'r> {
     password: &'r str,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Validate)]
 #[serde(crate = "rocket::serde")]
 struct Address<'r> {
     street: &'r str,
