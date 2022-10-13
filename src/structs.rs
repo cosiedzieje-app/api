@@ -1,9 +1,6 @@
-use std::ops::Add;
-
 pub use rocket::serde::json::Json;
 pub use rocket_db_pools::{sqlx, Database};
 pub use validator::{Validate};
-use anyhow;
 
 use serde::{Deserialize, Serialize};
 
@@ -75,7 +72,7 @@ pub type JsonSomsiadStatus = Json<SomsiadStatus>;
 pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 impl UserLogin<'_> {
-    pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
+    pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<(bool, i32)> {
         let salt: (String,) = sqlx::query_as("SELECT salt as salt FROM users WHERE name = ?")
             .bind(self.name)
             .fetch_one(db)
@@ -84,16 +81,16 @@ impl UserLogin<'_> {
         let salt: [u8; 16] = salt.0.into_bytes().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
 
-        let logged = sqlx::query("SELECT id FROM users WHERE name = ? AND password = ?")
+        let logged: Option<i32> = sqlx::query_scalar("SELECT id FROM users WHERE name = ? AND password = ?")
             .bind(self.name)
             .bind(hashed_pass)
             .fetch_optional(db)
             .await?;
 
-         match logged {
-             Some(_) => Ok(true),
-             None => Ok(false),
-         }
+        match logged {
+            Some(row) => Ok((true, row)),
+            None => Ok((false, 0)),
+        }
     }
 }
 
