@@ -87,10 +87,31 @@ async fn logout(cookies: &CookieJar<'_>) -> JsonSomsiadStatus {
     SomsiadStatus::ok()
 }
 
+#[get("/user_data")]
+async fn user_data<'a>(db: &Db, cookies: &CookieJar<'_>) -> SomsiadResult<Json<UserPublicInfo>> {
+    match cookies.get_private("id") {
+        Some(cookie) => {
+            let id: i32 = cookie.value().parse().unwrap_or_default();
+            if id == 0 {
+                Err(SomsiadStatus::error("Twój token logowania jest nieprawidłowy!"))
+            } else {
+                match UserPublicInfo::from_id(&db.0, id).await {
+                    Ok(user) => Ok(Json(user)),
+                    Err(e) => {
+                        error!("Internal error: {}", e);
+                        Err(SomsiadStatus::error("Wewnętrzny błąd"))
+                    }
+                }
+            }
+        }
+        None => Err(SomsiadStatus::error("Nie jesteś zalogowany")),
+    }
+}
+
 #[launch]
 fn rocket() -> _ {
     rocket::build()
         .attach(Db::init())
-        .mount("/", routes![login, register, logout, get_markers])
+        .mount("/", routes![login, register, logout, get_markers, user_data])
         .mount("/", FileServer::from(relative!("static")))
 }
