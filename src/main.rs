@@ -13,8 +13,8 @@ extern crate rocket;
 #[database("somsiad")]
 pub struct Db(sqlx::MySqlPool);
 
-#[get("/markers")]
-async fn get_markers(db: &Db) -> Json {}
+/* #[get("/markers")]
+async fn get_markers(db: &Db) -> Json {} */
 
 #[post("/register", format = "json", data = "<user>")]
 async fn register(db: &Db, user: Json<UserRegister<'_>>) -> JsonSomsiadStatus {
