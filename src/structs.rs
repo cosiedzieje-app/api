@@ -1,12 +1,12 @@
 pub use rocket::serde::json::Json;
 pub use rocket_db_pools::{sqlx, Database};
-pub use validator::{Validate};
+pub use validator::Validate;
 
 use serde::{Deserialize, Serialize};
 
 use rand::Rng;
 
-use bcrypt::{DEFAULT_COST, hash_with_salt};
+use bcrypt::{hash_with_salt, DEFAULT_COST};
 
 #[derive(Deserialize, Validate)]
 #[serde(crate = "rocket::serde")]
@@ -15,17 +15,29 @@ pub struct UserLogin<'r> {
     password: &'r str,
 }
 
-#[derive(Deserialize, Validate)]
+#[derive(Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 struct Address<'r> {
     street: &'r str,
-    #[validate(length(min=6, max=6))]
+    #[validate(length(min = 6, max = 6))]
     #[serde(rename = "postalCode")]
     postal_code: &'r str,
     country: &'r str,
     number: u32,
 }
 
+#[repr(u8)]
+#[derive(Deserialize)]
+enum Sex {
+    Female = b'F',
+    Male = b'M',
+    Other = b'O',
+}
+impl Into<char> for Sex {
+    fn into(self) -> char {
+        self as u8 as char
+    }
+}
 #[derive(Deserialize, Validate)]
 #[serde(crate = "rocket::serde")]
 pub struct UserRegister<'r> {
@@ -37,7 +49,7 @@ pub struct UserRegister<'r> {
     sex: char,
     #[validate]
     address: Address<'r>,
-    reputation: u32
+    reputation: u32,
 }
 
 #[derive(Serialize)]
@@ -73,19 +85,20 @@ pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<(bool, i32)> {
-        let salt: (String,) = sqlx::query_as("SELECT salt as salt FROM users WHERE name = ?")
+        let salt: String = sqlx::query_scalar("SELECT salt as salt FROM users WHERE name = ?")
             .bind(self.name)
             .fetch_one(db)
             .await?;
 
-        let salt: [u8; 16] = salt.0.into_bytes().try_into().unwrap();
+        let salt: [u8; 16] = salt.into_bytes().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
 
-        let logged: Option<i32> = sqlx::query_scalar("SELECT id FROM users WHERE name = ? AND password = ?")
-            .bind(self.name)
-            .bind(hashed_pass)
-            .fetch_optional(db)
-            .await?;
+        let logged: Option<i32> =
+            sqlx::query_scalar("SELECT id FROM users WHERE name = ? AND password = ?")
+                .bind(self.name)
+                .bind(hashed_pass)
+                .fetch_optional(db)
+                .await?;
 
         match logged {
             Some(row) => Ok((true, row)),
@@ -104,16 +117,31 @@ impl UserRegister<'_> {
         let salt_copy: [u8; 16] = salt.clone().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.login.password.as_bytes(), DEFAULT_COST, salt_copy)?;
 
-        let rows_affected =
-            sqlx::query("INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?)")
+        let mut tx = db.begin().await?;
+
+        let user_insert =
+            sqlx::query("INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?);")
                 .bind(self.email)
                 .bind(self.login.name)
                 .bind(hashed_pass.to_string())
                 .bind(salt)
-                .execute(db)
-                .await?
-                .rows_affected();
+                .execute(&mut tx)
+                .await?;
+        let last_insert_id = user_insert.last_insert_id();
 
+        let full_user_insert = sqlx::query("insert into full_users_info (id,name,surname,sex,address,reputation) values(?,?,?,?,?,?);")
+            .bind(last_insert_id)
+            .bind(self.name)
+            .bind(self.surname)
+            .bind(self.sex.to_string())
+            .bind(serde_json::to_string(&self.address)?)
+            .bind(self.reputation)
+            .execute(&mut tx)
+            .await?;
+
+        tx.commit().await?;
+
+        let rows_affected = user_insert.rows_affected();
         Ok(rows_affected > 0)
     }
 }

@@ -18,8 +18,8 @@ create table `full_users_info`(
 `reputation` mediumint NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_polish_ci;
--- Will be added later, for now it errors
--- alter table users add foreign key (id) references full_users_info (id);
+--Should work
+alter table full_users_info add foreign key (id) references users (id) on delete cascade on update cascade;
 
 CREATE TABLE `Markers` (
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
