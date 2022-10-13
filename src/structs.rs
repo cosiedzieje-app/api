@@ -22,7 +22,8 @@ pub struct UserLogin<'r> {
 #[serde(crate = "rocket::serde")]
 struct Address<'r> {
     street: &'r str,
-    postalCode: &'r str,
+    #[serde(rename = "postalCode")]
+    postal_code: &'r str,
     country: &'r str,
     number: u32,
 }
