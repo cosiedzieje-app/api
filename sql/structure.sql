@@ -18,12 +18,12 @@ create table `full_users_info`(
 `reputation` mediumint NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_polish_ci;
---Should work
 alter table full_users_info add foreign key (id) references users (id) on delete cascade on update cascade;
 
 CREATE TABLE `Markers` (
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-`coordinates` POINT NOT NULL,
+`latitude` double NOT NULL,
+`longtitude` double NOT NULL,
 `title` VARCHAR(25) NOT NULL,
 `description` TEXT NOT NULL,
 `type` ENUM("A","B","C") NOT NULL,

@@ -1,10 +1,18 @@
+pub mod markers;
 pub mod structs;
 use crate::structs::*;
+use markers::show_markers;
+use markers::Marker;
 use nanoid::format;
 use rocket::fs::relative;
 use rocket::fs::FileServer;
+use rocket::futures::io::Cursor;
+use rocket::futures::Stream;
 use rocket::http::{Cookie, CookieJar};
+use rocket::response::Responder;
 use rocket::serde::json::Json;
+use rocket::Response;
+use serde::Serialize;
 use validator::ValidationErrors;
 #[macro_use]
 extern crate rocket;
@@ -13,8 +21,16 @@ extern crate rocket;
 #[database("somsiad")]
 pub struct Db(sqlx::MySqlPool);
 
-/* #[get("/markers")]
-async fn get_markers(db: &Db) -> Json {} */
+/* impl<'r> Responder<'r, 'r> for Vec<Json<Marker>> {
+    fn respond_to(self, request: &'r rocket::Request<'_>) -> rocket::response::Result<'o> {
+        Response::build().sized_body(Stream::from(Cursor::new(self)))
+    }
+} */
+
+#[get("/markers")]
+async fn get_markers(db: &Db) -> String {
+    show_markers(db).await.unwrap()
+}
 
 #[post("/register", format = "json", data = "<user>")]
 async fn register(db: &Db, user: Json<UserRegister<'_>>) -> JsonSomsiadStatus {
@@ -96,6 +112,6 @@ async fn user_data<'a>(db: &Db, cookies: &CookieJar<'_>) -> SomsiadResult<Json<U
 fn rocket() -> _ {
     rocket::build()
         .attach(Db::init())
-        .mount("/", routes![login, register, logout, user_data])
+        .mount("/", routes![login, register, logout, get_markers, user_data])
         .mount("/", FileServer::from(relative!("static")))
 }

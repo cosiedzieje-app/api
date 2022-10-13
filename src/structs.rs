@@ -11,7 +11,8 @@ use bcrypt::{hash_with_salt, DEFAULT_COST};
 #[derive(Deserialize, Validate)]
 #[serde(crate = "rocket::serde")]
 pub struct UserLogin<'r> {
-    name: &'r str,
+    #[validate(email)]
+    email: &'r str,
     password: &'r str,
 }
 
@@ -42,10 +43,9 @@ impl Into<char> for Sex {
 #[serde(crate = "rocket::serde")]
 pub struct UserRegister<'r> {
     login: UserLogin<'r>,
+    username: &'r str,
     name: &'r str,
     surname: &'r str,
-    #[validate(email)]
-    email: &'r str,
     sex: char,
     #[validate]
     address: Address<'r>,
@@ -120,8 +120,8 @@ pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<(bool, i32)> {
-        let salt: String = sqlx::query_scalar("SELECT salt as salt FROM users WHERE name = ?")
-            .bind(self.name)
+        let salt: String = sqlx::query_scalar("SELECT salt as salt FROM users WHERE email = ?")
+            .bind(self.email)
             .fetch_one(db)
             .await?;
 
@@ -129,8 +129,8 @@ impl UserLogin<'_> {
         let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
 
         let logged: Option<i32> =
-            sqlx::query_scalar("SELECT id FROM users WHERE name = ? AND password = ?")
-                .bind(self.name)
+            sqlx::query_scalar("SELECT id FROM users WHERE email = ? AND password = ?")
+                .bind(self.email)
                 .bind(hashed_pass)
                 .fetch_optional(db)
                 .await?;
@@ -156,8 +156,8 @@ impl UserRegister<'_> {
 
         let user_insert =
             sqlx::query("INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?);")
-                .bind(self.email)
-                .bind(self.login.name)
+                .bind(self.login.email)
+                .bind(self.username)
                 .bind(hashed_pass.to_string())
                 .bind(salt)
                 .execute(&mut tx)
