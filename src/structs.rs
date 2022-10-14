@@ -176,6 +176,6 @@ impl UserRegister<'_> {
         tx.commit().await?;
 
         let rows_affected = user_insert.rows_affected();
-        Ok(rows_affected > 0)
+        Ok(rows_affected == full_user_insert.rows_affected() && rows_affected > 0)
     }
 }
