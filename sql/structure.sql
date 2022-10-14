@@ -36,8 +36,6 @@ PRIMARY KEY (`ID`)
 ) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_polish_ci;
 alter table `Markers` add foreign key (`user_id`) references users (`id`)
 
-create user 'cursor'@'%' identified by 's0ms1a$';
-grant all privileges on somsiad.* to 'cursor'@'%';
 /* Example address JSON:
 {
   "address": {
