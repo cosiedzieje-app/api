@@ -11,6 +11,7 @@ use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use sqlx::MySqlPool;
 use std::env;
+use crate::markers::Marker;
 #[macro_use]
 extern crate rocket;
 
@@ -21,8 +22,14 @@ extern crate rocket;
 } */
 
 #[get("/markers")]
-async fn get_markers(db: &rocket::State<MySqlPool>) -> String {
-    show_markers(db).await.unwrap()
+async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Json<Vec<Marker>>> {
+    match show_markers(db).await{
+        Ok(markers) => Ok(Json(markers)),
+        Err(e) => {
+            error_!("Error: {}", e);
+            Err(SomsiadStatus::error("Wewnętrzny błąd serwera"))
+        },
+    }
 }
 
 #[post("/register", format = "json", data = "<user>")]
