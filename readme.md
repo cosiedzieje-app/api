@@ -13,8 +13,7 @@ Returns all inserted markers in the form of a JSON array:
 {"id":3,
 "latitude":50.21212,
 "longtitude":1.12121,
-"title":"pomoc dzieciom",
-"type":"NeighborHelp"}]
+"title":"pomoc dzieciom", "type":"NeighborHelp"}]
 ```
 ###### Structure of a marker returned by this endpoint:
 
@@ -24,9 +23,9 @@ Returns all inserted markers in the form of a JSON array:
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
 
-## /markers/<id>:
+## /markers/\<id>:
 
-Return full information about Marker with ID <id>:
+Return full information about Marker with ID \<id>:
 
 ```
 {"id":1,
