@@ -18,7 +18,7 @@ pub async fn get_marker(
 ) -> SomsiadResult<Json<FullMarkerOwned>> {
     match show_marker(db, id).await {
         Ok(marker) => Ok(Json(marker)),
-        Err(e) => {
+        Err(_) => {
             // error_!("Error: {}", e);
             Err(SomsiadStatus::error("Invalid ID"))
         }
@@ -41,7 +41,7 @@ pub async fn add_marker(
     db: &rocket::State<MySqlPool>,
     marker: Json<FullMarker<'_>>,
 ) -> JsonSomsiadStatus {
-    match marker.add_marker(&db).await {
+    match marker.add_marker(db).await {
         Err(e) => {
             error_!("Internal error: {}", e);
             SomsiadStatus::error("Nieoczekiwany błąd")
@@ -62,14 +62,14 @@ pub async fn register(
     if let Err(e) = user.validate() {
         return SomsiadStatus::errors(
             e.errors()
-                .into_iter()
+                .iter()
                 .map(|(field, _)| field.to_string())
                 .collect(),
         );
     }
 
-    match user.add_to_db(&db).await {
-        Err(e) => match e.to_string().split(" ").last().unwrap_or_default() {
+    match user.add_to_db(db).await {
+        Err(e) => match e.to_string().split(' ').last().unwrap_or_default() {
             "'email'" => SomsiadStatus::error("Podany e-mail jest zajęty"),
             "'name'" => SomsiadStatus::error("Podany nick jest zajęty"),
             _ => {
@@ -94,7 +94,7 @@ pub async fn login(
     cookies: &CookieJar<'_>,
     user: Json<UserLogin<'_>>,
 ) -> JsonSomsiadStatus {
-    match user.login(&db).await {
+    match user.login(db).await {
         Err(e) => {
             error_!("Internal error: {}", e);
             SomsiadStatus::error("Nieoczekiwany błąd podczas logowania")
@@ -129,7 +129,7 @@ pub async fn user_data<'a>(
                     "Twój token logowania jest nieprawidłowy!",
                 ))
             } else {
-                match UserPublicInfo::from_id(&db, id).await {
+                match UserPublicInfo::from_id(db, id).await {
                     Ok(user) => Ok(Json(user)),
                     Err(e) => {
                         error_!("Internal error: {}", e);

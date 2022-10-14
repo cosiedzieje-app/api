@@ -35,9 +35,14 @@ pub(super) enum Sex {
     Other = b'O',
 }
 
-impl Into<char> for Sex {
-    fn into(self) -> char {
-        self as u8 as char
+impl From<char> for Sex {
+    fn from(chr: char) -> Self {
+        match chr as u8 {
+            b'F' => Self::Female,
+            b'M' => Self::Male,
+            b'O' => Self::Other,
+            _ => panic!("cannot transform this value into a Sex"),
+        }
     }
 }
 
@@ -46,7 +51,7 @@ fn validate_postal_code(postal_code: &str) -> Result<(), ValidationError> {
         return Err(ValidationError::new("bad_postal_code"));
     }
 
-    let splits: Vec<&str> = postal_code.split("-").collect();
+    let splits: Vec<&str> = postal_code.split('-').collect();
     if splits.len() != 2 || splits[0].len() != 2 || splits[1].len() != 3 {
         return Err(ValidationError::new("bad_postal_code"));
     }

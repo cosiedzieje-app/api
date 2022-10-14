@@ -15,7 +15,7 @@ pub struct SomsiadStatus {
 impl SomsiadStatus {
     pub fn errors(errors: Vec<String>) -> Json<Self> {
         Json(Self {
-            errors: errors,
+            errors,
             status: "error".to_string(),
         })
     }
