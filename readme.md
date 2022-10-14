@@ -1,6 +1,6 @@
 # Endpoints:
 
-## /markers:
+## [GET]/markers:
 
 Returns all inserted markers in the form of a JSON array:
 
@@ -23,7 +23,7 @@ Returns all inserted markers in the form of a JSON array:
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
 
-## /markers/\<id>:
+## [get]/markers/\<id>:
 
 Return full information about Marker with ID \<id>:
 
@@ -67,7 +67,7 @@ if the ID is not present in the DB, it returns:
 
 [^1]: Incosistencies with the event type will be dealt with shortly
 
-## /add_marker:
+## [POST]/add_marker:
 Adds marker which will be supplied by frontend in a JSON format
 e.g:
 ```
@@ -92,7 +92,7 @@ e.g:
 
 Responds with [SomsiadStatus](#somsiadStatus)
 
-## /register
+## [POST]/register
 Tries to register an user, given their credentials
 e.g:
 ```
@@ -127,7 +127,7 @@ e.g:
 
 Responds with [SomsiadStatus](#somsiadStatus)
 
-## /login
+## [POST]/login
 Tries to login with given credentials
 e.g.:
 ```
@@ -143,10 +143,10 @@ Structure:
 Responds with [SomsiadStatus](#somsiadStatus)
 If user logs in correctly, it sets a private cookie which represents their id
 
-## /logout:
+## [GET]/logout:
 Removes the private cookie that indicates that a user is logged in
 
-## /user_data:
+## [GET]/user_data:
 If the user has the private cookie, which indicates that they are logged in set, it displays data about them:
 e.g:
 ```
