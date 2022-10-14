@@ -58,31 +58,23 @@ pub struct UserPublicInfo {
     name: String,
     surname: String,
     email: String,
-    sex: char,
+    sex: String,
     address: String,
     reputation: i32,
 }
 
 impl UserPublicInfo {
     pub async fn from_id(db: &sqlx::MySqlPool, id: i32) -> anyhow::Result<Self> {
-        let user: (String, String, String, String, String, String, i32) = sqlx::query_as(r#"
-        SELECT u.name as login_name, ext.name, ext.surname, u.email, ext.sex, ext.address, ext.reputation FROM users as u 
-        INNER JOIN full_users_info as ext ON u.id = ext.id 
-        WHERE u.id = ?"#
-       )
-            .bind(id)
+        let user = sqlx::query_as!(UserPublicInfo, r#"
+        SELECT u.name as login_name, ext.name as name, ext.surname as surname, u.email as email, 
+        ext.sex as sex, ext.address as address, ext.reputation as `reputation: i32`
+        FROM users as u 
+        INNER JOIN full_users_info as ext ON u.id = ext.id
+        WHERE u.id = ?"#, id)
             .fetch_one(db)
             .await?;
 
-        Ok(Self {
-            login_name: user.0,
-            name: user.1,
-            surname: user.2,
-            email: user.3,
-            sex: user.4.chars().next().unwrap(),
-            address: user.5,
-            reputation: user.6,
-        })
+        Ok(user)
     }
 }
 
