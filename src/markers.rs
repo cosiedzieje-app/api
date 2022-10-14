@@ -2,9 +2,9 @@ use chrono::serde::ts_seconds;
 use chrono::serde::ts_seconds_option;
 use chrono::DateTime;
 use chrono::Utc;
-use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 pub use validator::Validate;
+use crate::structs::Address;
 
 #[derive(sqlx::Type, Serialize, Deserialize)]
 enum EventType {
@@ -22,16 +22,6 @@ pub struct Marker {
     longtitude: f64,
     title: String,
     event_type: EventType,
-}
-
-#[derive(Deserialize, Serialize, Validate)]
-struct Address<'r> {
-    street: &'r str,
-    #[validate(length(min = 6, max = 6))]
-    #[serde(rename = "postalCode")]
-    postal_code: &'r str,
-    country: &'r str,
-    number: u32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -55,15 +45,6 @@ pub struct FullMarker<'r> {
     user_id: i32,
 }
 
-#[derive(Deserialize, Serialize, Validate)]
-struct AddressOwned {
-    street: String,
-    #[validate(length(min = 6, max = 6))]
-    #[serde(rename = "postalCode")]
-    postal_code: String,
-    country: String,
-    number: u32,
-}
 #[derive(Serialize, Deserialize)]
 pub struct FullMarkerOwned {
     id: u32,

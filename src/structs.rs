@@ -16,7 +16,7 @@ pub struct UserLogin<'r> {
 }
 
 #[derive(Deserialize, Serialize, Validate)]
-struct Address<'r> {
+pub struct Address<'r> {
     street: &'r str,
     #[validate(custom = "validate_postal_code")]
     #[serde(rename = "postalCode")]
