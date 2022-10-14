@@ -116,14 +116,11 @@ async fn user_data<'a>(
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
     dotenv().ok();
-    let db_url = "mysql://cursor:s0ms1a$@localhost/somsiad";
     let db = PoolOptions::<MySql>::new()
         .min_connections(0)
         .max_connections(10)
         .test_before_acquire(true)
-        .connect(
-            db_url, /* &env::var("DATABASE_URL").expect("Failed to acquire DB URL") */
-        )
+        .connect(&env::var("DATABASE_URL").expect("Failed to acquire DB URL"))
         .await
         .expect("Failed to connect to db");
 
