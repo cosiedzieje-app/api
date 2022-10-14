@@ -1,5 +1,4 @@
 pub use rocket::serde::json::Json;
-pub use rocket_db_pools::{sqlx, Database};
 pub use validator::Validate;
 
 use serde::{Deserialize, Serialize};
@@ -54,7 +53,7 @@ pub struct UserRegister<'r> {
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
-pub struct UserPublicInfo{
+pub struct UserPublicInfo {
     login_name: String,
     name: String,
     surname: String,
@@ -64,7 +63,7 @@ pub struct UserPublicInfo{
     reputation: i32,
 }
 
-impl UserPublicInfo{
+impl UserPublicInfo {
     pub async fn from_id(db: &sqlx::MySqlPool, id: i32) -> anyhow::Result<Self> {
         let user: (String, String, String, String, String, String, i32) = sqlx::query_as(r#"
         SELECT u.name as login_name, ext.name, ext.surname, u.email, ext.sex, ext.address, ext.reputation FROM users as u 
@@ -75,7 +74,7 @@ impl UserPublicInfo{
             .fetch_one(db)
             .await?;
 
-        Ok(Self{
+        Ok(Self {
             login_name: user.0,
             name: user.1,
             surname: user.2,

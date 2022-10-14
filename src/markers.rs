@@ -1,7 +1,4 @@
-use crate::sqlx::FromRow;
 use rocket::serde::json::Json;
-use rocket_db_pools::sqlx::Type;
-pub use rocket_db_pools::{sqlx, Database};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]

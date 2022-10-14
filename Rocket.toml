@@ -1,2 +1,0 @@
-[global.databases.somsiad]
-url = "mysql://cursor:s0ms1a$@localhost/somsiad"
