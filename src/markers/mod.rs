@@ -18,6 +18,7 @@ enum EventType {
 
 #[derive(Serialize)]
 pub struct Marker {
+    id: u32,
     latitude: f64,
     longtitude: f64,
     title: String,
@@ -70,7 +71,7 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
     let markers = sqlx::query_as!(
         Marker,
         r#"
-    SELECT latitude, longtitude, title, type as `event_type: EventType`
+    SELECT id, latitude, longtitude, title, type as `event_type: EventType`
     FROM markers
     "#
     )
