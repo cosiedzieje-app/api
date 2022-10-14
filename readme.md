@@ -5,7 +5,16 @@
 Returns all inserted markers in the form of a JSON array:
 
 ```
-[{"id":2,"latitude":50.21212,"longtitude":1.12121,"title":"pomoc dzieciom","type":"NeighborHelp"},{"id":3,"latitude":50.21212,"longtitude":1.12121,"title":"pomoc dzieciom","type":"NeighborHelp"}]
+[{"id":2,
+"latitude":50.21212,
+"longtitude":1.12121,
+"title":"pomoc dzieciom",
+"type":"NeighborHelp"},
+{"id":3,
+"latitude":50.21212,
+"longtitude":1.12121,
+"title":"pomoc dzieciom",
+"type":"NeighborHelp"}]
 ```
 ###### Structure of a marker returned by this endpoint:
 
@@ -20,13 +29,28 @@ Returns all inserted markers in the form of a JSON array:
 Return full information about Marker with ID <id>:
 
 ```
-{"id":1,"latitude":50.21212,"longtitude":1.12121,"title":"pomoc dzieciom","description":"sasas","type":"A","addTime":1665747948,"endTime":1666784387,"address":"[\"name1\", \"name4\", \"name3\"]","contactInfo":"5151","userID":1}
+{"id":1,
+"latitude":50.21212,
+"longtitude":1.12121,
+"title":"pomoc dzieciom",
+"description":"sasas",
+"type":"A",
+"addTime":1665747948,
+"endTime":1666784387,
+"address":"{
+	\"street\":\"Jagiellonska\",
+	\"postalCode\":\"41-207\",
+	\"country\":\"Poland\",
+	\"number\":13}",
+"contactInfo":"5151",
+"userID":1}
 ```
 
 if the ID is not present in the DB, it returns:
 
 ```
-{"status":"error","errors":["Invalid ID"]}
+{"status":"error",
+"errors":["Invalid ID"]}
 ```
 
 <a name="markerStructure"></a>Structure:
@@ -73,24 +97,23 @@ Responds with [SomsiadStatus](#somsiadStatus)
 Tries to register an user, given their credentials
 e.g:
 ```
-                  {
-                    login: {
-			email: 'example@sasad.com',
-                        password: "toor"
-                    }, 
-                    username: "lol",
-                    name: "Paweł",
-                    surname: "Kowalski",
-                    sex: 'M',
-                    reputation: 1337,
-                    address: {
-                      postalCode: "42-230",
-                      street: "Jagiellonska",
-                      number: 13,
-                      country: "Poland"
-                    }
-                  }
-
+  {
+    login: {
+	email: 'example@sasad.com',
+	password: "toor"
+    }, 
+    username: "lol",
+    name: "Paweł",
+    surname: "Kowalski",
+    sex: 'M',
+    reputation: 1337,
+    address: {
+      postalCode: "42-230",
+      street: "Jagiellonska",
+      number: 13,
+      country: "Poland"
+    }
+  }
 ```
 <a name="userStructure"></a>Structure:
 - login: JSON array:
@@ -128,7 +151,17 @@ Removes the private cookie that indicates that a user is logged in
 If the user has the private cookie, which indicates that they are logged in set, it displays data about them:
 e.g:
 ```
-{"login_name":"root","name":"Paweł","surname":"Kowalski","email":"example@gmail.com","sex":"Male","address":"{\"street\":\"Jagiellonska\",\"postalCode\":\"41-207\",\"country\":\"Poland\",\"number\":13}","reputation":1337}
+{"login_name":"root",
+"name":"Paweł",
+"surname":"Kowalski",
+"email":"example@gmail.com",
+"sex":"Male",
+"address":"{
+	\"street\":\"Jagiellonska\",
+	\"postalCode\":\"41-207\",
+	\"country\":\"Poland\",
+	\"number\":13}",
+"reputation":1337}
 ```
 Structure:
 [user structure](#userStructure) but without the password
