@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use bcrypt::{hash_with_salt, DEFAULT_COST};
 
 use nanoid::nanoid;
+use validator::ValidationError;
 
 #[derive(Deserialize, Validate)]
 pub struct UserLogin<'r> {
@@ -17,15 +18,32 @@ pub struct UserLogin<'r> {
 #[derive(Deserialize, Serialize, Validate)]
 struct Address<'r> {
     street: &'r str,
-    #[validate(length(min = 6, max = 6))]
+    #[validate(custom = "validate_postal_code")]
     #[serde(rename = "postalCode")]
     postal_code: &'r str,
     country: &'r str,
     number: u32,
 }
 
+fn validate_postal_code(postal_code: &str) -> Result<(), ValidationError> {
+    if postal_code.len() != 6 {
+        return Err(ValidationError::new("bad_postal_code"));
+    }
+
+    let splits: Vec<&str> = postal_code.split("-").collect();
+    if splits.len() != 2 || splits[0].len() != 2 || splits[1].len() != 3 {
+        return Err(ValidationError::new("bad_postal_code"));
+    }
+
+    if !splits[0].chars().all(char::is_numeric) || !splits[1].chars().all(char::is_numeric) {
+        return Err(ValidationError::new("bad_postal_code"));
+    }
+
+    Ok(())
+}
+
 #[repr(u8)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize, sqlx::Type)]
 enum Sex {
     Female = b'F',
     Male = b'M',
@@ -54,7 +72,7 @@ pub struct UserPublicInfo {
     name: String,
     surname: String,
     email: String,
-    sex: String,
+    sex: Sex,
     address: String,
     reputation: i32,
 }
@@ -65,7 +83,7 @@ impl UserPublicInfo {
             UserPublicInfo,
             r#"
         SELECT u.name as login_name, ext.name as name, ext.surname as surname, u.email as email, 
-        ext.sex as sex, ext.address as address, ext.reputation as `reputation: i32`
+        ext.sex as `sex: Sex`, ext.address as address, ext.reputation as `reputation: i32`
         FROM users as u 
         INNER JOIN full_users_info as ext ON u.id = ext.id
         WHERE u.id = ?"#,
