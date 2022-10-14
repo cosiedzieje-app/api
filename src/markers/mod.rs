@@ -22,6 +22,7 @@ pub struct Marker {
     latitude: f64,
     longtitude: f64,
     title: String,
+    #[serde(rename = "type")]
     event_type: EventType,
 }
 
