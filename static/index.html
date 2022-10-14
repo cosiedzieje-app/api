@@ -61,5 +61,36 @@
             console.log("Login response: ", content);
           })();
     </script>
+    <script>
+        (async () => {
+            const rawResponse = await fetch('/add_marker', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(
+		      {
+				latitude:50.21212,
+				longtitude:1.12121,title:"pomoc dzieciom",
+				description:"sasas",
+				type:"A",
+				addTime:1665747948,
+				endTime:1666784387,
+				address: {
+					postalCode: "41-207",
+					street: "Jagiellonska",
+					number: 13,
+					country: "Poland"
+				},
+			        contactInfo:"5151",
+			        userID:1})
+                }
+            );
+            const content = await rawResponse.json();
+          
+            console.log("add_marker response: ", content);
+          })();
+    </script>
 </body>
 </html>

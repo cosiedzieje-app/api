@@ -1,8 +1,12 @@
 pub mod markers;
 pub mod structs;
+use crate::markers::FullMarkerOwned;
+use crate::markers::Marker;
 use crate::structs::*;
 use dotenv::dotenv;
+use markers::show_marker;
 use markers::show_markers;
+use markers::FullMarker;
 use rocket::fs::relative;
 use rocket::fs::FileServer;
 use rocket::http::{Cookie, CookieJar};
@@ -11,24 +15,50 @@ use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use sqlx::MySqlPool;
 use std::env;
-use crate::markers::Marker;
 #[macro_use]
 extern crate rocket;
 
-/* impl<'r> Responder<'r, 'r> for Vec<Json<Marker>> {
-    fn respond_to(self, request: &'r rocket::Request<'_>) -> rocket::response::Result<'o> {
-        Response::build().sized_body(Stream::from(Cursor::new(self)))
+//TODO: Add route that displays all info about specific marker
+#[get("/markers/<id>")]
+async fn get_marker(
+    db: &rocket::State<MySqlPool>,
+    id: u32,
+) -> SomsiadResult<Json<FullMarkerOwned>> {
+    match show_marker(db, id).await {
+        Ok(marker) => Ok(Json(marker)),
+        Err(e) => {
+            // error_!("Error: {}", e);
+            Err(SomsiadStatus::error("Invalid ID"))
+        }
     }
-} */
+}
 
 #[get("/markers")]
 async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Json<Vec<Marker>>> {
-    match show_markers(db).await{
+    match show_markers(db).await {
         Ok(markers) => Ok(Json(markers)),
         Err(e) => {
             error_!("Error: {}", e);
             Err(SomsiadStatus::error("Wewnętrzny błąd serwera"))
-        },
+        }
+    }
+}
+
+#[post("/add_marker", format = "json", data = "<marker>")]
+async fn add_marker(
+    db: &rocket::State<MySqlPool>,
+    marker: Json<FullMarker<'_>>,
+) -> JsonSomsiadStatus {
+    match marker.add_marker(&db).await {
+        Err(e) => {
+            error!("Internal error: {}", e);
+            SomsiadStatus::error("Nieoczekiwany błąd")
+        }
+        Ok(false) => {
+            warn_!("Zero rows affected, user not added");
+            SomsiadStatus::error("Nieoczekiwany błąd")
+        }
+        Ok(true) => SomsiadStatus::ok(),
     }
 }
 
@@ -134,7 +164,15 @@ async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .mount(
             "/",
-            routes![login, register, logout, get_markers, user_data],
+            routes![
+                login,
+                register,
+                logout,
+                get_markers,
+                add_marker,
+                get_marker,
+                user_data
+            ],
         )
         .mount("/", FileServer::from(relative!("static")))
         .manage(db)

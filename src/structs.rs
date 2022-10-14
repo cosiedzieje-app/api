@@ -8,7 +8,6 @@ use rand::Rng;
 use bcrypt::{hash_with_salt, DEFAULT_COST};
 
 #[derive(Deserialize, Validate)]
-#[serde(crate = "rocket::serde")]
 pub struct UserLogin<'r> {
     #[validate(email)]
     email: &'r str,
@@ -16,7 +15,6 @@ pub struct UserLogin<'r> {
 }
 
 #[derive(Deserialize, Serialize, Validate)]
-#[serde(crate = "rocket::serde")]
 struct Address<'r> {
     street: &'r str,
     #[validate(length(min = 6, max = 6))]
@@ -39,7 +37,6 @@ impl Into<char> for Sex {
     }
 }
 #[derive(Deserialize, Validate)]
-#[serde(crate = "rocket::serde")]
 pub struct UserRegister<'r> {
     login: UserLogin<'r>,
     username: &'r str,
@@ -52,7 +49,6 @@ pub struct UserRegister<'r> {
 }
 
 #[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
 pub struct UserPublicInfo {
     login_name: String,
     name: String,
@@ -65,21 +61,24 @@ pub struct UserPublicInfo {
 
 impl UserPublicInfo {
     pub async fn from_id(db: &sqlx::MySqlPool, id: i32) -> anyhow::Result<Self> {
-        let user = sqlx::query_as!(UserPublicInfo, r#"
+        let user = sqlx::query_as!(
+            UserPublicInfo,
+            r#"
         SELECT u.name as login_name, ext.name as name, ext.surname as surname, u.email as email, 
         ext.sex as sex, ext.address as address, ext.reputation as `reputation: i32`
         FROM users as u 
         INNER JOIN full_users_info as ext ON u.id = ext.id
-        WHERE u.id = ?"#, id)
-            .fetch_one(db)
-            .await?;
+        WHERE u.id = ?"#,
+            id
+        )
+        .fetch_one(db)
+        .await?;
 
         Ok(user)
     }
 }
 
 #[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
 pub struct SomsiadStatus {
     status: String,
     errors: Vec<String>,
@@ -111,10 +110,10 @@ pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<(bool, i32)> {
-        let salt: Option<String> = sqlx::query_scalar("SELECT salt as salt FROM users WHERE email = ?")
-            .bind(self.email)
-            .fetch_one(db)
-            .await?;
+        let salt: Option<String> =
+            sqlx::query_scalar!("SELECT salt as salt FROM users WHERE email = ?", self.email)
+                .fetch_optional(db)
+                .await?;
 
         let salt = match salt {
             Some(salt) => salt,
@@ -124,12 +123,15 @@ impl UserLogin<'_> {
         let salt: [u8; 16] = salt.into_bytes().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
 
-        let logged: Option<i32> =
-            sqlx::query_scalar("SELECT id FROM users WHERE email = ? AND password = ?")
-                .bind(self.email)
-                .bind(hashed_pass)
-                .fetch_optional(db)
-                .await?;
+        let logged: Option<i32> = sqlx::query_scalar!(
+            "SELECT id FROM users WHERE email = ? AND password = ?",
+            self.email,
+            hashed_pass
+        )
+        /* .bind(self.email)
+        .bind(hashed_pass) */
+        .fetch_optional(db)
+        .await?;
 
         match logged {
             Some(row) => Ok((true, row)),
@@ -150,23 +152,35 @@ impl UserRegister<'_> {
 
         let mut tx = db.begin().await?;
 
-        let user_insert =
-            sqlx::query("INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?);")
-                .bind(self.login.email)
-                .bind(self.username)
-                .bind(hashed_pass.to_string())
-                .bind(salt)
-                .execute(&mut tx)
-                .await?;
+        let user_insert = sqlx::query!(
+            "INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?);",
+            self.login.email,
+            self.username,
+            hashed_pass.to_string(),
+            salt
+        )
+        /* .bind(self.login.email)
+        .bind(self.username)
+        .bind(hashed_pass.to_string())
+        .bind(salt) */
+        .execute(&mut tx)
+        .await?;
         let last_insert_id = user_insert.last_insert_id();
 
-        let full_user_insert = sqlx::query("insert into full_users_info (id,name,surname,sex,address,reputation) values(?,?,?,?,?,?);")
-            .bind(last_insert_id)
+        let full_user_insert = sqlx::query!(
+            "insert into full_users_info (id,name,surname,sex,address,reputation) values(?,?,?,?,?,?);",
+            last_insert_id,
+            self.name,
+            self.surname,
+            self.sex.to_string(),
+            serde_json::to_string(&self.address)?,
+            self.reputation)
+            /* .bind(last_insert_id)
             .bind(self.name)
             .bind(self.surname)
             .bind(self.sex.to_string())
             .bind(serde_json::to_string(&self.address)?)
-            .bind(self.reputation)
+            .bind(self.reputation) */
             .execute(&mut tx)
             .await?;
 
