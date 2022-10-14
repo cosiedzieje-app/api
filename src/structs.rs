@@ -111,10 +111,15 @@ pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<(bool, i32)> {
-        let salt: String = sqlx::query_scalar("SELECT salt as salt FROM users WHERE email = ?")
+        let salt: Option<String> = sqlx::query_scalar("SELECT salt as salt FROM users WHERE email = ?")
             .bind(self.email)
             .fetch_one(db)
             .await?;
+
+        let salt = match salt {
+            Some(salt) => salt,
+            None => return Ok((false, 0)),
+        };
 
         let salt: [u8; 16] = salt.into_bytes().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
