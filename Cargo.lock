@@ -1964,7 +1964,6 @@ dependencies = [
  "dotenv",
  "lettre",
  "nanoid",
- "rand",
  "rocket",
  "serde",
  "serde_json",

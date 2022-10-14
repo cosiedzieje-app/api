@@ -3,9 +3,9 @@ pub use validator::Validate;
 
 use serde::{Deserialize, Serialize};
 
-use rand::Rng;
-
 use bcrypt::{hash_with_salt, DEFAULT_COST};
+
+use nanoid::nanoid;
 
 #[derive(Deserialize, Validate)]
 pub struct UserLogin<'r> {
@@ -142,12 +142,8 @@ impl UserLogin<'_> {
 
 impl UserRegister<'_> {
     pub async fn add_to_db(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
-        //thread_rng is stored in thread local storage, so noticable performance impact is not expected
-        let salt = rand::thread_rng()
-            .sample_iter(&rand::distributions::Alphanumeric)
-            .take(16)
-            .collect::<Vec<u8>>();
-        let salt_copy: [u8; 16] = salt.clone().try_into().unwrap();
+        let salt = nanoid!(16);
+        let salt_copy: [u8; 16] = salt.as_bytes().clone().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.login.password.as_bytes(), DEFAULT_COST, salt_copy)?;
 
         let mut tx = db.begin().await?;
