@@ -22,40 +22,18 @@ impl<'r> EventType {
 #[serde(crate = "rocket::serde")]
 pub struct Marker {
     latitude: f64,
-    longtituge: f64,
+    longtitude: f64,
     title: String,
     event_type: String,
 }
 
-pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<String> /* anyhow::Result<Vec<Json<Marker>>> */
-{
-    let markers: Vec<(f64, f64, String, String)> =
-        sqlx::query_as("SELECT latitude, longtitude, title, type from Markers")
-            .fetch_all(db)
-            .await?;
+pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
+    let markers = sqlx::query_as!(Marker, r#"
+    SELECT latitude, longtitude, title, type as event_type
+    FROM markers
+    "#)
+        .fetch_all(db)
+        .await?;
 
-    assert!(markers.len() > 0);
-    let s = markers
-        .into_iter()
-        .take(3)
-        .map(|x| {
-            serde_json::to_string(&Marker {
-                latitude: x.0,
-                longtituge: x.1,
-                title: x.2,
-                event_type: x.3,
-            })
-            .unwrap_or_default()
-        })
-        .collect();
-
-    Ok(s)
-    /*
-    Ok(vec![Json(Marker {
-        latitude: 10f32,
-        longtituge: 10f32,
-        title: "test",
-        event_type: EventType::NeighborHelp,
-    })])
-        */
+    Ok(markers)
 }
