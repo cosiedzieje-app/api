@@ -33,7 +33,7 @@ Return full information about Marker with ID \<id>:
 "longtitude":1.12121,
 "title":"pomoc dzieciom",
 "description":"sasas",
-"type":"A",
+"type":"NeighborHelp",
 "addTime":1665747948,
 "endTime":1666784387,
 "address":{
@@ -59,14 +59,12 @@ if the ID is not present in the DB, it returns:
 - longtitude: number (double) {coordinate}
 - title: string {title of the marker}
 - description: string {description of a given event}
-- type: Enum ("A"/"B"/"C") {type of the event}[^1]
+- type: Enum ("NeighborHelp"/"Happening"/"Charity") {type of the event}
 - addTime: Unix milis {Time when the marker got added}
 - endTime: Unix milis/Nothing {If present - time when the marker expires}
 - address: [address](#addressStructure)
 - contactInfo: not sure yet, up to you to decide {probably either phone number or email}
 - userID: number {ID of the user that added the given marker}
-
-[^1]: Incosistencies with the event type will be dealt with shortly
 
 ## [POST]/add_marker:
 Adds marker which will be supplied by frontend in a JSON format
@@ -76,7 +74,7 @@ e.g:
 	latitude:50.21212,
 	longtitude:1.12121,title:"pomoc dzieciom",
 	description:"sasas",
-	type:"A",
+	type:"NeighborHelp",
 	addTime:1665747948,
 	endTime:1666784387,
 	address: {
@@ -105,7 +103,7 @@ e.g:
     username: "lol",
     name: "Paweł",
     surname: "Kowalski",
-    sex: 'M',
+    sex: 'Male',
     reputation: 1337,
     address: {
       postalCode: "42-230",
@@ -122,7 +120,7 @@ e.g:
 - username: string, unique {username of a given user}
 - name: string {real world name}
 - surname: string {self-explanatory}
-- sex: Enum ('M','F','O') {self-explanatory}
+- sex: Enum ('Male','Female','Other') {self-explanatory}
 - reputation number {Reputation points of the user, should probably be set to 0 during registration}
 - address: [address](#addressStructure)
 

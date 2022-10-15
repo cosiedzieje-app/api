@@ -34,7 +34,7 @@ pub struct FullMarker<'r> {
     title: &'r str,
     description: &'r str,
     #[serde(rename = "type")]
-    event_type: &'r str,
+    event_type: EventType,
     #[serde(with = "ts_seconds")]
     #[serde(rename = "addTime")]
     add_time: DateTime<Utc>,
@@ -110,7 +110,7 @@ impl<'r> FullMarker<'r> {
             self.longtitude,
             self.title,
             self.description,
-            self.event_type.to_string(),
+            self.event_type,
             self.add_time,
             self.end_time,
             serde_json::to_string(&self.address)?,

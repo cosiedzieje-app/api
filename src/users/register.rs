@@ -11,7 +11,7 @@ pub struct UserRegister<'r> {
     username: &'r str,
     name: &'r str,
     surname: &'r str,
-    sex: char,
+    sex: Sex,
     #[validate]
     address: Address<'r>,
     reputation: u32,
@@ -27,23 +27,14 @@ pub struct Address<'r> {
     number: u32,
 }
 
-#[repr(u8)]
 #[derive(Serialize, Deserialize, sqlx::Type)]
 pub(super) enum Sex {
-    Female = b'F',
-    Male = b'M',
-    Other = b'O',
-}
-
-impl From<char> for Sex {
-    fn from(chr: char) -> Self {
-        match chr as u8 {
-            b'F' => Self::Female,
-            b'M' => Self::Male,
-            b'O' => Self::Other,
-            _ => panic!("cannot transform this value into a Sex"),
-        }
-    }
+    #[sqlx(rename = "F")]
+    Female,
+    #[sqlx(rename = "M")]
+    Male,
+    #[sqlx(rename = "O")]
+    Other,
 }
 
 fn validate_postal_code(postal_code: &str) -> Result<(), ValidationError> {
@@ -87,7 +78,7 @@ impl UserRegister<'_> {
             last_insert_id,
             self.name,
             self.surname,
-            self.sex.to_string(),
+            self.sex,
             serde_json::to_string(&self.address)?,
             self.reputation)
             .execute(&mut tx)
