@@ -7,6 +7,7 @@ use super::login::UserLogin;
 
 #[derive(Deserialize, Validate)]
 pub struct UserRegister<'r> {
+    #[validate]
     login: UserLogin<'r>,
     username: &'r str,
     name: &'r str,
