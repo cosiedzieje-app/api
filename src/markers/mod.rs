@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub use validator::Validate;
 
 use crate::users::register::Address;
+use crate::users::login::AddressOwned;
 
 #[derive(sqlx::Type, Serialize, Deserialize)]
 enum EventType {
@@ -55,14 +56,14 @@ pub struct FullMarkerOwned {
     title: String,
     description: String,
     #[serde(rename = "type")]
-    r#type: String,
+    r#type: EventType,
     #[serde(with = "ts_seconds")]
     #[serde(rename = "addTime")]
     add_time: DateTime<Utc>,
     #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
     end_time: Option<DateTime<Utc>>,
-    address: String,
+    address: sqlx::types::Json<AddressOwned>,
     #[serde(rename = "contactInfo")]
     contact_info: String,
     #[serde(rename = "userID")]
@@ -86,7 +87,9 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
     let marker = sqlx::query_as!(
         FullMarkerOwned,
         r#"
-        SELECT * FROM markers
+        SELECT id, latitude, longtitude, title, description, type as `type: EventType`, add_time, end_time,
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info, user_id
+        FROM markers
         Where id = ?
         "#,
         id

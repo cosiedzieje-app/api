@@ -11,6 +11,15 @@ pub struct UserLogin<'r> {
     pub password: &'r str,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct AddressOwned {
+    street: String,
+    #[serde(rename = "postalCode")]
+    postal_code: String,
+    country: String,
+    number: u32,
+}
+
 #[derive(Serialize)]
 pub struct UserPublicInfo {
     login_name: String,
@@ -18,7 +27,7 @@ pub struct UserPublicInfo {
     surname: String,
     email: String,
     sex: Sex,
-    address: String,
+    address: sqlx::types::Json<AddressOwned>,
     reputation: i32,
 }
 
@@ -58,7 +67,7 @@ impl UserPublicInfo {
             UserPublicInfo,
             r#"
         SELECT u.name as login_name, ext.name as name, ext.surname as surname, u.email as email, 
-        ext.sex as `sex: Sex`, ext.address as address, ext.reputation as `reputation: i32`
+        ext.sex as `sex: Sex`, ext.address as `address: sqlx::types::Json<AddressOwned>`, ext.reputation as `reputation: i32`
         FROM users as u 
         INNER JOIN full_users_info as ext ON u.id = ext.id
         WHERE u.id = ?"#,
