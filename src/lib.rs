@@ -9,45 +9,36 @@ use serde::Serialize;
 pub use validator::Validate;
 
 #[derive(Serialize)]
-pub struct SomsiadStatus {
-    status: String,
-    errors: Vec<String>,
+#[serde(tag = "status", content = "res")]
+pub enum SomsiadStatus<T> {
+    #[serde(rename = "ok")]
+    Ok(T),
+    #[serde(rename = "error")]
+    Error(Vec<String>),
 }
-impl SomsiadStatus {
+
+impl<T> SomsiadStatus<T> {
     pub fn errors(errors: Vec<String>) -> Json<Self> {
-        Json(Self {
-            errors,
-            status: "error".to_string(),
-        })
+        Json(Self::Error(errors))
     }
 
     pub fn error(error: &str) -> Json<Self> {
-        Json(Self {
-            errors: vec![error.to_string()],
-            status: "error".to_string(),
-        })
+        Json(Self::Error(vec![error.to_string()]))
     }
 
-    pub fn ok() -> Json<Self> {
-        Json(Self {
-            errors: Vec::new(),
-            status: "ok".to_string(),
-        })
+    pub fn ok(obj: T) -> Json<Self> {
+        Json(Self::Ok(obj))
     }
 }
-pub type JsonSomsiadStatus = Json<SomsiadStatus>;
-pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
 
 pub fn validate_id_cookie(id: Option<Cookie>) -> SomsiadResult<u32> {
     match id {
         Some(cookie) => match cookie.value().parse().unwrap_or_default() {
-            0 => {
-                return Err(SomsiadStatus::error(
-                    "Twój token logowania jest nieprawidłowy",
-                ))
-            }
-            val @ _ => return Ok(val),
+            0 => return SomsiadStatus::error("Twój token logowania jest nieprawidłowy"),
+            val @ _ => return SomsiadStatus::ok(val),
         },
-        None => Err(SomsiadStatus::error("Nie jesteś zalogowany")),
+        None => SomsiadStatus::error("Nie jesteś zalogowany"),
     }
 }
+
+pub type SomsiadResult<T> = Json<SomsiadStatus<T>>;
