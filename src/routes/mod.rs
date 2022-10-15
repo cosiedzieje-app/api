@@ -54,6 +54,35 @@ pub async fn add_marker(
     }
 }
 
+#[get("/rm_marker/<marker_id>")]
+pub async fn remove_marker(
+    db: &rocket::State<MySqlPool>,
+    cookies: &CookieJar<'_>,
+    marker_id: u32,
+) -> SomsiadResult<Json<FullMarkerOwned>> {
+    match cookies.get_private("id") {
+        Some(user_id) => {
+            let user_id = match user_id.value().parse().unwrap_or_default() {
+                0 => {
+                    return Err(SomsiadStatus::error(
+                        "Twój token logowania jest nieprawidłowy",
+                    ))
+                }
+                val @ _ => val,
+            };
+
+            match delete_marker(db, user_id, marker_id).await {
+                Err(e) => {
+                    error_!("Error in remove_marker: {}", e);
+                    Err(SomsiadStatus::error("Nieoczekiwany błąd"))
+                }
+                Ok(marker) => Ok(Json(marker)),
+            }
+        }
+        None => Err(SomsiadStatus::error("Nie jesteś zalogowany")),
+    }
+}
+
 #[post("/register", format = "json", data = "<user>")]
 pub async fn register(
     db: &rocket::State<MySqlPool>,

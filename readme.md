@@ -23,9 +23,9 @@ Returns all inserted markers in the form of a JSON array:
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
 
-## [get]/markers/\<id>:
+## [GET]/markers/\<id>:
 
-Return full information about Marker with ID \<id>:
+Returns full information about Marker with ID \<id>:
 
 ```
 {"id":1,
@@ -46,7 +46,7 @@ Return full information about Marker with ID \<id>:
 "userID":1}
 ```
 
-if the ID is not present in the DB, it returns:
+if the ID is not present in the DB, it responds with [SomsiadStatus::error](#somsiadError)
 
 ```
 {"status":"error",
@@ -178,7 +178,7 @@ If everything goes correctly it is:
     "errors": []
 }
 ```
-If it does not, it is:
+<a name="somsiadError"></a>If it does not, it is:
 ```
 {
     "status": "error",

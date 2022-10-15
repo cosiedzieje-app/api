@@ -4,8 +4,8 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 pub use validator::Validate;
 
-use crate::users::register::Address;
 use crate::users::login::AddressOwned;
+use crate::users::register::Address;
 
 #[derive(sqlx::Type, Serialize, Deserialize)]
 enum EventType {
@@ -69,6 +69,40 @@ pub struct FullMarkerOwned {
     #[serde(rename = "userID")]
     user_id: i32,
 }
+pub async fn delete_marker(
+    db: &sqlx::MySqlPool,
+    user_id: u32,
+    marker_id: u32,
+) -> anyhow::Result<FullMarkerOwned> {
+    let mut tx = db.begin().await?;
+
+    let marker = sqlx::query_as!(
+        FullMarkerOwned,
+        r#"
+        SELECT id, latitude, longtitude, title, description, type as `type: EventType`, add_time, end_time,
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info, user_id
+        FROM markers
+        Where id = ? AND user_id = ?
+        "#,
+        marker_id,user_id
+    )
+    .fetch_one(&mut tx)
+    .await?;
+
+    sqlx::query!(
+        r#"
+            DELETE FROM markers WHERE id = ? AND user_id = ?   
+            "#,
+        marker_id,
+        user_id
+    )
+    .execute(&mut tx)
+    .await?;
+
+    tx.commit().await?;
+
+    Ok(marker)
+}
 pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
     let markers = sqlx::query_as!(
         Marker,
@@ -89,8 +123,7 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
         r#"
         SELECT id, latitude, longtitude, title, description, type as `type: EventType`, add_time, end_time,
         address as `address: sqlx::types::Json<AddressOwned>`, contact_info, user_id
-        FROM markers
-        Where id = ?
+        FROM markers Where id = ?
         "#,
         id
     )
