@@ -64,7 +64,7 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 - addTime: Unix milis {Time when the marker got added}
 - endTime: Unix milis/Nothing {If present - time when the marker expires}
 - address: [address](#addressStructure)
-- contactInfo: not sure yet, up to you to decide {probably either phone number or email}
+- contactInfo: [contactInfo](#contactInfoStructure)
 - userID: number {ID of the user that added the given marker}
 
 ## [POST]/add_marker:
@@ -211,4 +211,32 @@ e.g:
       country: "Poland"
     }
   }
+```
+
+## <a name="contactInfoStructure"></a>Structure of the ContactInfo field:
+
+- name: string {self-explanatory}
+- surname: string {self-explanatory}
+- address: [addres](#addressStructure)
+- method:
+	- type: Enum ("PhoneNumber"/Email) {type of the contact method} 
+	- val: string {Either phone number or email with which the user adding the marker can be contacted}
+
+e.g:
+```
+contactInfo:{
+	name: "Paweł",
+	surname: "Kowalksi",
+	address: {
+		postalCode: "41-207",
+		street: "Jagiellonska",
+		number: 13,
+		country: "Poland"
+	},
+	method:{
+		type: "PhoneNumber",
+		val: "123456789"
+	}
+}
+
 ```
