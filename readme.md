@@ -36,11 +36,12 @@ Return full information about Marker with ID \<id>:
 "type":"A",
 "addTime":1665747948,
 "endTime":1666784387,
-"address":"{
-	\"street\":\"Jagiellonska\",
-	\"postalCode\":\"41-207\",
-	\"country\":\"Poland\",
-	\"number\":13}",
+"address":{
+	"street":"Jagiellonska",
+	"postalCode": "41-207",
+	"country": "Poland",
+	"number":13
+},
 "contactInfo":"5151",
 "userID":1}
 ```
@@ -155,11 +156,12 @@ e.g:
 "surname":"Kowalski",
 "email":"example@gmail.com",
 "sex":"Male",
-"address":"{
-	\"street\":\"Jagiellonska\",
-	\"postalCode\":\"41-207\",
-	\"country\":\"Poland\",
-	\"number\":13}",
+"address":{
+	"street":"Jagiellonska",
+	"postalCode": "41-207",
+	"country": "Poland",
+	"number":13
+},
 "reputation":1337}
 ```
 Structure:
