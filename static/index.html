@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <script>
+<!--     <script>
         (async () => {
             const rawResponse = await fetch('/register', {
               method: 'POST',
@@ -60,7 +60,7 @@
           
             console.log("Login response: ", content);
           })();
-    </script>
+    </script> -->
     <script>
         (async () => {
             const rawResponse = await fetch('/add_marker', {
@@ -83,7 +83,20 @@
 					number: 13,
 					country: "Poland"
 				},
-			        contactInfo:"5151",
+			        contactInfo:{
+					name: "Paweł",
+					surname: "Kowalksi",
+					address: {
+						postalCode: "41-207",
+						street: "Jagiellonska",
+						number: 13,
+						country: "Poland"
+					},
+					method:{
+						type: "PhoneNumber",
+						val: "123456789"
+					}
+			        },
 			        userID:1})
                 }
             );

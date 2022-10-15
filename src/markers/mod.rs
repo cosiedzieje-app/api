@@ -17,6 +17,21 @@ enum EventType {
     Charity,
 }
 
+#[derive(Serialize, Deserialize /* , sqlx::Type */)]
+#[serde(tag = "type", content = "val")]
+enum ContactMethod {
+    Email(String),
+    PhoneNumber(String),
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ContactInfo {
+    name: String,
+    surname: String,
+    address: AddressOwned,
+    method: ContactMethod,
+}
+
 #[derive(Serialize)]
 pub struct Marker {
     id: u32,
@@ -43,7 +58,7 @@ pub struct FullMarker<'r> {
     end_time: Option<DateTime<Utc>>,
     address: Address<'r>,
     #[serde(rename = "contactInfo")]
-    contact_info: &'r str,
+    contact_info: ContactInfo,
     #[serde(rename = "userID")]
     user_id: i32,
 }
@@ -65,7 +80,7 @@ pub struct FullMarkerOwned {
     end_time: Option<DateTime<Utc>>,
     address: sqlx::types::Json<AddressOwned>,
     #[serde(rename = "contactInfo")]
-    contact_info: String,
+    contact_info: sqlx::types::Json<ContactInfo>,
     #[serde(rename = "userID")]
     user_id: i32,
 }
@@ -80,7 +95,7 @@ pub async fn delete_marker(
         FullMarkerOwned,
         r#"
         SELECT id, latitude, longtitude, title, description, type as `type: EventType`, add_time, end_time,
-        address as `address: sqlx::types::Json<AddressOwned>`, contact_info, user_id
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
         FROM markers
         Where id = ? AND user_id = ?
         "#,
@@ -122,7 +137,7 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
         FullMarkerOwned,
         r#"
         SELECT id, latitude, longtitude, title, description, type as `type: EventType`, add_time, end_time,
-        address as `address: sqlx::types::Json<AddressOwned>`, contact_info, user_id
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
         FROM markers Where id = ?
         "#,
         id
@@ -147,7 +162,7 @@ impl<'r> FullMarker<'r> {
             self.add_time,
             self.end_time,
             serde_json::to_string(&self.address)?,
-            self.contact_info,
+            serde_json::to_string(&self.contact_info)?,
             self.user_id
         )
         .execute(db)
