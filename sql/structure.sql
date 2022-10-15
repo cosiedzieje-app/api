@@ -34,7 +34,7 @@ CREATE TABLE `markers` (
 `user_id` INT NOT NULL,
 PRIMARY KEY (`ID`)
 ) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_polish_ci;
-alter table `Markers` add foreign key (`user_id`) references users (`id`)
+alter table `markers` add foreign key (`user_id`) references users (`id`)
 
 /* Example address JSON:
 {

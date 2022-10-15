@@ -40,17 +40,20 @@ pub async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Json<Ve
 pub async fn add_marker(
     db: &rocket::State<MySqlPool>,
     marker: Json<FullMarker<'_>>,
-) -> JsonSomsiadStatus {
-    match marker.add_marker(db).await {
+    cookies: &CookieJar<'_>,
+) -> SomsiadResult<Json<SomsiadStatus>> {
+    let user_id = validate_id_cookie(cookies.get_private("id"))?;
+
+    match marker.add_marker(db, user_id).await {
         Err(e) => {
             error_!("Internal error: {}", e);
-            SomsiadStatus::error("Nieoczekiwany błąd")
+            Err(SomsiadStatus::error("Nieoczekiwany błąd"))
         }
         Ok(false) => {
             warn_!("Zero rows affected, user not added");
-            SomsiadStatus::error("Nieoczekiwany błąd")
+            Err(SomsiadStatus::error("Nieoczekiwany błąd"))
         }
-        Ok(true) => SomsiadStatus::ok(),
+        Ok(true) => Ok(SomsiadStatus::ok()),
     }
 }
 
@@ -60,26 +63,13 @@ pub async fn remove_marker(
     cookies: &CookieJar<'_>,
     marker_id: u32,
 ) -> SomsiadResult<Json<FullMarkerOwned>> {
-    match cookies.get_private("id") {
-        Some(user_id) => {
-            let user_id = match user_id.value().parse().unwrap_or_default() {
-                0 => {
-                    return Err(SomsiadStatus::error(
-                        "Twój token logowania jest nieprawidłowy",
-                    ))
-                }
-                val @ _ => val,
-            };
-
-            match delete_marker(db, user_id, marker_id).await {
-                Err(e) => {
-                    error_!("Error in remove_marker: {}", e);
-                    Err(SomsiadStatus::error("Nieoczekiwany błąd"))
-                }
-                Ok(marker) => Ok(Json(marker)),
-            }
+    let user_id: u32 = validate_id_cookie(cookies.get_private("id"))?;
+    match delete_marker(db, user_id, marker_id).await {
+        Err(e) => {
+            error_!("Error in remove_marker: {}", e);
+            Err(SomsiadStatus::error("Nieoczekiwany błąd"))
         }
-        None => Err(SomsiadStatus::error("Nie jesteś zalogowany")),
+        Ok(marker) => Ok(Json(marker)),
     }
 }
 
@@ -150,23 +140,12 @@ pub async fn user_data<'a>(
     db: &rocket::State<MySqlPool>,
     cookies: &CookieJar<'_>,
 ) -> SomsiadResult<Json<UserPublicInfo>> {
-    match cookies.get_private("id") {
-        Some(cookie) => {
-            let id: i32 = cookie.value().parse().unwrap_or_default();
-            if id == 0 {
-                Err(SomsiadStatus::error(
-                    "Twój token logowania jest nieprawidłowy!",
-                ))
-            } else {
-                match UserPublicInfo::from_id(db, id).await {
-                    Ok(user) => Ok(Json(user)),
-                    Err(e) => {
-                        error_!("Internal error: {}", e);
-                        Err(SomsiadStatus::error("Wewnętrzny błąd"))
-                    }
-                }
-            }
+    let id = validate_id_cookie(cookies.get_private("id"))?;
+    match UserPublicInfo::from_id(db, id).await {
+        Ok(user) => Ok(Json(user)),
+        Err(e) => {
+            error_!("Internal error: {}", e);
+            Err(SomsiadStatus::error("Wewnętrzny błąd"))
         }
-        None => Err(SomsiadStatus::error("Nie jesteś zalogowany")),
     }
 }

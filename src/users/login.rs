@@ -62,7 +62,7 @@ impl UserLogin<'_> {
 }
 
 impl UserPublicInfo {
-    pub async fn from_id(db: &sqlx::MySqlPool, id: i32) -> anyhow::Result<Self> {
+    pub async fn from_id(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<Self> {
         let user = sqlx::query_as!(
             UserPublicInfo,
             r#"

@@ -2,6 +2,7 @@
 pub mod markers;
 pub mod routes;
 pub mod users;
+use rocket::http::Cookie;
 /* Uses */
 pub use rocket::serde::json::Json;
 use serde::Serialize;
@@ -36,3 +37,17 @@ impl SomsiadStatus {
 }
 pub type JsonSomsiadStatus = Json<SomsiadStatus>;
 pub type SomsiadResult<T> = Result<T, Json<SomsiadStatus>>;
+
+pub fn validate_id_cookie(id: Option<Cookie>) -> SomsiadResult<u32> {
+    match id {
+        Some(cookie) => match cookie.value().parse().unwrap_or_default() {
+            0 => {
+                return Err(SomsiadStatus::error(
+                    "Twój token logowania jest nieprawidłowy",
+                ))
+            }
+            val @ _ => return Ok(val),
+        },
+        None => Err(SomsiadStatus::error("Nie jesteś zalogowany")),
+    }
+}

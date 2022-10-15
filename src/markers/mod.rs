@@ -59,8 +59,6 @@ pub struct FullMarker<'r> {
     address: Address<'r>,
     #[serde(rename = "contactInfo")]
     contact_info: ContactInfo,
-    #[serde(rename = "userID")]
-    user_id: i32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -148,7 +146,7 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
     Ok(marker)
 }
 impl<'r> FullMarker<'r> {
-    pub async fn add_marker(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
+    pub async fn add_marker(&self, db: &sqlx::MySqlPool, user_id: u32) -> anyhow::Result<bool> {
         let added = sqlx::query!(
             r#"
             INSERT INTO `markers` (`latitude`, `longtitude`, `title`, `description`,
@@ -163,7 +161,7 @@ impl<'r> FullMarker<'r> {
             self.end_time,
             serde_json::to_string(&self.address)?,
             serde_json::to_string(&self.contact_info)?,
-            self.user_id
+            user_id
         )
         .execute(db)
         .await?;
