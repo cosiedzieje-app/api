@@ -43,16 +43,23 @@ Returns full information about Marker with ID \<id>:
 	"country": "Poland",
 	"number":13
 },
-"contactInfo":"5151",
-"userID":1}
+contactInfo:{
+	name: "Paweł",
+	surname: "Kowalksi",
+	address: {
+		postalCode: "41-207",
+		street: "Jagiellonska",
+		number: 13,
+		country: "Poland"
+	},
+	method:{
+		type: "PhoneNumber",
+		val: "123456789"
+	}
+}
 ```
 
 if the ID is not present in the DB, it responds with [SomsiadStatus::error](#somsiadError)
-
-```
-{"status":"error",
-"errors":["Invalid ID"]}
-```
 
 <a name="markerStructure"></a>Structure:
 - id: number {the id of the marker}
@@ -65,7 +72,6 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 - endTime: Unix milis/Nothing {If present - time when the marker expires}
 - address: [address](#addressStructure)
 - contactInfo: [contactInfo](#contactInfoStructure)
-- userID: number {ID of the user that added the given marker}
 
 ## [POST]/add_marker:
 Adds marker which will be supplied by frontend in a JSON format
@@ -84,9 +90,20 @@ e.g:
 		number: 13,
 		country: "Poland"
 	},
-	contactInfo:"5151",
-	userID:1
-}
+	contactInfo:{
+		name: "Paweł",
+		surname: "Kowalksi",
+		address: {
+			postalCode: "41-207",
+			street: "Jagiellonska",
+			number: 13,
+			country: "Poland"
+		},
+		method:{
+			type: "PhoneNumber",
+			val: "123456789"
+		}
+	}
 ```
 [Structure](#markerStructure)
 
@@ -181,19 +198,19 @@ If everything goes correctly it is:
 ```
 {
     "status": "ok",
-    "errors": []
+    "res": null 
 }
 ```
 <a name="somsiadError"></a>If it does not, it is:
 ```
 {
     "status": "error",
-    "errors": [
+    "res": [
         "Podany e-mail jest zajęty"
     ]
 }
 ```
-where the errors array entry is the error that has occured
+where status is either "ok" or "error", if it is "ok" then res is null and if it is erros then res is a array containing all of the errors that have occured
 
 ## <a name="addressStructure"></a>Structure of the address field:
 
