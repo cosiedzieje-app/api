@@ -91,6 +91,11 @@ e.g:
 
 Responds with [SomsiadStatus](#somsiadStatus)
 
+## [GET]/rm_marker/\<marker_id>
+Removes the marker with ID \<marker_id>, checking if it is being removed by the user who added it (checks if user_ID in private cookie and the given database row is equal)
+
+Responds with the Marker that has been removed or [SomsiadStatus::error](#somsiadError)
+
 ## [POST]/register
 Tries to register an user, given their credentials
 e.g:
