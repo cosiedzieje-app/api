@@ -58,7 +58,7 @@ pub async fn add_marker(
     }
 }
 
-#[delete("/markers/<marker_id>")]
+#[delete("/rm_marker/<marker_id>")]
 pub async fn remove_marker(
     db: &rocket::State<MySqlPool>,
     cookies: &CookieJar<'_>,
@@ -76,6 +76,7 @@ pub async fn remove_marker(
         Ok(marker) => SomsiadStatus::ok(marker),
     }
 }
+
 #[post("/register", format = "json", data = "<user>")]
 pub async fn register(
     db: &rocket::State<MySqlPool>,
@@ -83,10 +84,11 @@ pub async fn register(
 ) -> SomsiadResult<()> {
     if let Err(e) = user.validate() {
         return SomsiadStatus::errors(
-            e.errors()
-                .iter()
-                .map(|(field, _)| field.to_string())
-                .collect(),
+            e.to_string()
+                .split(']')
+                .map(|s| s[0..s.find(':').unwrap_or(s.len())].trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect()
         );
     }
 

@@ -8,6 +8,7 @@ use super::register::Sex;
 pub struct UserLogin<'r> {
     #[validate(email)]
     pub email: &'r str,
+    #[validate(length(min = 8))]
     pub password: &'r str,
 }
 
