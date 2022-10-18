@@ -40,7 +40,6 @@ Returns full information about Marker with ID \<id>:
 "address":{
 	"street":"Jagiellonska",
 	"postalCode": "41-207",
-	"country": "Poland",
 	"number":"13"
 },
 contactInfo:{
@@ -50,7 +49,6 @@ contactInfo:{
 		postalCode: "41-207",
 		street: "Jagiellonska",
 		number: "13",
-		country: "Poland"
 	},
 	method:{
 		type: "PhoneNumber",
@@ -88,7 +86,6 @@ e.g:
 		postalCode: "41-207",
 		street: "Jagiellonska",
 		number: "13",
-		country: "Poland"
 	},
 	contactInfo:{
 		name: "Paweł",
@@ -97,7 +94,6 @@ e.g:
 			postalCode: "41-207",
 			street: "Jagiellonska",
 			number: "13",
-			country: "Poland"
 		},
 		method:{
 			type: "PhoneNumber",
@@ -132,7 +128,6 @@ e.g:
       postalCode: "42-230",
       street: "Jagiellonska",
       number: "13",
-      country: "Poland"
     }
   }
 ```
@@ -217,7 +212,6 @@ where status is either "ok" or "error", if it is "ok" then res is null and if it
 - postalCode: string {self-explanatory}
 - street: string {only street of the address}
 - number: string (since houseNumbers can be 55a) {number of the house}
-- country: string {self-explanatory}
 
 e.g:
 ```
@@ -248,7 +242,6 @@ contactInfo:{
 		postalCode: "41-207",
 		street: "Jagiellonska",
 		number: 13,
-		country: "Poland"
 	},
 	method:{
 		type: "PhoneNumber",

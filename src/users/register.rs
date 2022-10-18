@@ -24,7 +24,6 @@ pub struct Address<'r> {
     #[validate(custom = "validate_postal_code")]
     #[serde(rename = "postalCode")]
     postal_code: &'r str,
-    country: &'r str,
     number: &'r str,
 }
 
