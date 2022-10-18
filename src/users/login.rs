@@ -43,6 +43,7 @@ impl UserLogin<'_> {
             None => return Ok((false, 0)),
         };
 
+        // https://stackoverflow.com/questions/277044/do-i-need-to-store-the-salt-with-bcrypt
         let result = verify(self.password, &user.password).unwrap();
 
         Ok((result, user.id))
