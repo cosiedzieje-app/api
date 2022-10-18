@@ -13,7 +13,8 @@ Returns all inserted markers in the form of a JSON array:
 {"id":3,
 "latitude":50.21212,
 "longtitude":1.12121,
-"title":"pomoc dzieciom", "type":"NeighborHelp"}]
+"title":"pomoc dzieciom", "type":"NeighborHelp",
+"userID":1}]
 ```
 ###### Structure of a marker returned by this endpoint:
 
@@ -22,6 +23,7 @@ Returns all inserted markers in the form of a JSON array:
 - longtitude: number (double) {coordinate}
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
+- userID: 
 
 ## [GET]/user_markers:
 
@@ -75,18 +77,19 @@ Returns full information about Marker with ID \<id>:
 	"postalCode": "41-207",
 	"number":"13"
 },
-contactInfo:{
-	name: "Paweł",
-	surname: "Kowalksi",
-	address: {
-		postalCode: "41-207",
-		street: "Jagiellonska",
-		number: "13",
+"contactInfo":{
+	"name": "Paweł",
+	"surname": "Kowalksi",
+	"address": {
+		"postalCode": "41-207",
+		"street": "Jagiellonska",
+		"number": "13",
 	},
-	method:{
-		type: "PhoneNumber",
-		val: "123456789"
-	}
+	"method":{
+		"type": "PhoneNumber",
+		"val": "123456789"
+	},
+"userID": 1
 }
 ```
 
@@ -99,10 +102,11 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 - title: string {title of the marker}
 - description: string {description of a given event}
 - type: Enum ("NeighborHelp"/"Happening"/"Charity") {type of the event}
-- addTime: Unix milis {Time when the marker got added}
+- addTime: Unix milis {Time when the marker got added, optional when adding}
 - endTime: Unix milis/Nothing {If present - time when the marker expires}
 - address: [address](#addressStructure)
 - contactInfo: [contactInfo](#contactInfoStructure)
+- userID: number {ID of the user who added given marker}
 
 ## [POST]/add_marker:
 Adds marker which will be supplied by frontend in a JSON format
@@ -172,7 +176,7 @@ e.g:
 - name: string {real world name}
 - surname: string {self-explanatory}
 - sex: Enum ('Male','Female','Other') {self-explanatory}
-- reputation number {Reputation points of the user, should probably be set to 0 during registration}
+- reputation number {Reputation points of the user, optional}
 - address: [address](#addressStructure)
 
 Responds with [SomsiadStatus](#somsiadStatus)

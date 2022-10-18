@@ -15,6 +15,7 @@ pub struct UserRegister<'r> {
     sex: Sex,
     #[validate]
     address: Address<'r>,
+    #[serde(default)]
     reputation: u32,
 }
 

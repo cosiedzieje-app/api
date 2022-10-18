@@ -40,6 +40,8 @@ pub struct Marker {
     title: String,
     #[serde(rename = "type")]
     event_type: EventType,
+    #[serde(rename = "userID")]
+    user_id: i32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -52,6 +54,7 @@ pub struct FullMarker<'r> {
     event_type: EventType,
     #[serde(with = "ts_seconds")]
     #[serde(rename = "addTime")]
+    #[serde(default)]
     add_time: DateTime<Utc>,
     #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
@@ -72,6 +75,7 @@ pub struct FullMarkerOwned {
     r#type: EventType,
     #[serde(with = "ts_seconds")]
     #[serde(rename = "addTime")]
+    #[serde(default)]
     add_time: DateTime<Utc>,
     #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
@@ -120,7 +124,7 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
     let markers = sqlx::query_as!(
         Marker,
         r#"
-    SELECT id, latitude, longtitude, title, type as `event_type: EventType`
+    SELECT id, latitude, longtitude, title, type as `event_type: EventType`,user_id
     FROM markers
     "#
     )
@@ -173,7 +177,7 @@ impl<'r> FullMarker<'r> {
             self.title,
             self.description,
             self.event_type,
-            self.add_time,
+            chrono::offset::Utc::now(),
             self.end_time,
             serde_json::to_string(&self.address)?,
             serde_json::to_string(&self.contact_info)?,
