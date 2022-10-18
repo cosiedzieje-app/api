@@ -1,4 +1,4 @@
-use bcrypt::{hash_with_salt, DEFAULT_COST};
+use bcrypt::verify;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -31,31 +31,22 @@ pub struct UserPublicInfo {
 
 impl UserLogin<'_> {
     pub async fn login(&self, db: &sqlx::MySqlPool) -> anyhow::Result<(bool, i32)> {
-        let salt: Option<String> =
-            sqlx::query_scalar!("SELECT salt as salt FROM users WHERE email = ?", self.email)
-                .fetch_optional(db)
-                .await?;
-
-        let salt = match salt {
-            Some(salt) => salt,
-            None => return Ok((false, 0)),
-        };
-
-        let salt: [u8; 16] = salt.into_bytes().try_into().unwrap();
-        let hashed_pass = hash_with_salt(self.password.as_bytes(), DEFAULT_COST, salt)?.to_string();
-
-        let logged: Option<i32> = sqlx::query_scalar!(
-            "SELECT id FROM users WHERE email = ? AND password = ?",
-            self.email,
-            hashed_pass
+        let user = sqlx::query!(
+            "SELECT password, id FROM users WHERE email = ?",
+            self.email
         )
         .fetch_optional(db)
         .await?;
 
-        match logged {
-            Some(row) => Ok((true, row)),
-            None => Ok((false, 0)),
-        }
+        let user = match user {
+            Some(user) => user,
+            None => return Ok((false, 0)),
+        };
+
+        // https://stackoverflow.com/questions/277044/do-i-need-to-store-the-salt-with-bcrypt
+        let result = verify(self.password, &user.password).unwrap();
+
+        Ok((result, user.id))
     }
 }
 

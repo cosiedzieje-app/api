@@ -58,17 +58,16 @@ fn validate_postal_code(postal_code: &str) -> Result<(), ValidationError> {
 impl UserRegister<'_> {
     pub async fn add_to_db(&self, db: &sqlx::MySqlPool) -> anyhow::Result<bool> {
         let salt = nanoid!(16);
-        let salt_copy: [u8; 16] = salt.clone().as_bytes().try_into().unwrap();
+        let salt_copy: [u8; 16] = salt.as_bytes().try_into().unwrap();
         let hashed_pass = hash_with_salt(self.login.password.as_bytes(), DEFAULT_COST, salt_copy)?;
 
         let mut tx = db.begin().await?;
 
         let user_insert = sqlx::query!(
-            "INSERT INTO users (email, name, password, salt) VALUES (?, ?, ?, ?);",
+            "INSERT INTO users (email, name, password) VALUES (?, ?, ?);",
             self.login.email,
             self.username,
             hashed_pass.to_string(),
-            salt
         )
         .execute(&mut tx)
         .await?;
