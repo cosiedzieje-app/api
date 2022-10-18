@@ -32,6 +32,7 @@ async fn main() -> Result<(), rocket::Error> {
                 get_marker,
                 remove_marker,
                 user_data,
+                get_user_markers,
             ],
         )
         .mount("/", FileServer::from(relative!("static")))

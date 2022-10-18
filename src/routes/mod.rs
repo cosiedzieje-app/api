@@ -12,6 +12,25 @@ use rocket::{
 };
 use sqlx::MySqlPool;
 
+#[get("/user_markers")]
+pub async fn get_user_markers(
+    db: &rocket::State<MySqlPool>,
+    cookies: &CookieJar<'_>,
+) -> SomsiadResult<Vec<FullMarkerOwned>> {
+    let user_id = match validate_id_cookie(cookies.get_private("id")).0 {
+        SomsiadStatus::Error(err) => return SomsiadStatus::errors(err),
+        SomsiadStatus::Ok(val) => val,
+    };
+
+    match show_user_markers(db, user_id).await {
+        Ok(markers) => SomsiadStatus::ok(markers),
+        Err(e) => {
+            error_!("Error: {}", e);
+            SomsiadStatus::error("Wewnętrzny błąd serwera")
+        }
+    }
+}
+
 #[get("/markers/<id>")]
 pub async fn get_marker(db: &rocket::State<MySqlPool>, id: u32) -> SomsiadResult<FullMarkerOwned> {
     match show_marker(db, id).await {
