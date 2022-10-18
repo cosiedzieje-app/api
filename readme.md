@@ -23,6 +23,39 @@ Returns all inserted markers in the form of a JSON array:
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
 
+## [GET]/user_markers:
+
+Return all points added by the currently logged in user:
+
+```
+[{"id":1,
+"latitude":50.21212,
+"longtitude":1.12121,
+"title":"pomoc dzieciom",
+"description":"sasas",
+"type":"NeighborHelp",
+"addTime":1665747948,
+"endTime":1666784387,
+"address":{
+	"street":"Jagiellonska",
+	"postalCode": "41-207",
+	"number":"13"
+},
+contactInfo:{
+	name: "Paweł",
+	surname: "Kowalksi",
+	address: {
+		postalCode: "41-207",
+		street: "Jagiellonska",
+		number: "13",
+	},
+	method:{
+		type: "PhoneNumber",
+		val: "123456789"
+	}
+}]
+```
+
 ## [GET]/markers/\<id>:
 
 Returns full information about Marker with ID \<id>:
