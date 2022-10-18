@@ -4,8 +4,7 @@ CREATE TABLE `users` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `email` varchar(255) NOT NULL UNIQUE,
  `name` varchar(255) NOT NULL UNIQUE,
- `password` varchar(255) NOT NULL,
- `salt` char(16) NOT NULL,
+ `password` varchar(60) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_polish_ci;
 

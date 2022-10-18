@@ -34,8 +34,8 @@ impl<T> SomsiadStatus<T> {
 pub fn validate_id_cookie(id: Option<Cookie>) -> SomsiadResult<u32> {
     match id {
         Some(cookie) => match cookie.value().parse().unwrap_or_default() {
-            0 => return SomsiadStatus::error("Twój token logowania jest nieprawidłowy"),
-            val @ _ => return SomsiadStatus::ok(val),
+            0 => SomsiadStatus::error("Twój token logowania jest nieprawidłowy"),
+            val @ _ => SomsiadStatus::ok(val),
         },
         None => SomsiadStatus::error("Nie jesteś zalogowany"),
     }
