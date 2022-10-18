@@ -23,7 +23,7 @@ Returns all inserted markers in the form of a JSON array:
 - longtitude: number (double) {coordinate}
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
-- userID: 
+- userID: number {ID of the user who added given marker}
 
 ## [GET]/user_markers:
 
