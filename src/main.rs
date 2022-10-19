@@ -5,6 +5,8 @@ use somsiad_api::routes::*;
 use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use std::env;
+use somsiad_api::fairings;
+use somsiad_api::catchers;
 
 #[macro_use]
 extern crate rocket;
@@ -36,7 +38,11 @@ async fn main() -> Result<(), rocket::Error> {
             ],
         )
         .mount("/", FileServer::from(relative!("static")))
+        .register("/", catchers![
+                  catchers::options_catcher
+        ])
         .manage(db)
+        .attach(fairings::CORS)
         .launch()
         .await?;
 

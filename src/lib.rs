@@ -2,6 +2,8 @@
 pub mod markers;
 pub mod routes;
 pub mod users;
+pub mod fairings;
+pub mod catchers;
 use rocket::http::Cookie;
 /* Uses */
 pub use rocket::serde::json::Json;
