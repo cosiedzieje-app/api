@@ -5,6 +5,11 @@ use somsiad_api::routes::*;
 use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use std::env;
+use somsiad_api::fairings;
+use somsiad_api::catchers;
+use figment::{Figment, providers::{Format, Toml}};
+use rocket::fairing::AdHoc;
+use somsiad_api::Config;
 
 #[macro_use]
 extern crate rocket;
@@ -20,7 +25,13 @@ async fn main() -> Result<(), rocket::Error> {
         .await
         .expect("Failed to connect to db");
 
-    let _rocket = rocket::build()
+    let config = Figment::from(rocket::Config::default())
+        .merge(Toml::file("Rocket.toml").nested());
+
+    let _rocket = rocket::custom(config)
+        .attach(fairings::CORS)
+        .attach(AdHoc::config::<Config>())
+        .manage(db)
         .mount(
             "/",
             routes![
@@ -36,7 +47,9 @@ async fn main() -> Result<(), rocket::Error> {
             ],
         )
         .mount("/", FileServer::from(relative!("static")))
-        .manage(db)
+        .register("/", catchers![
+                  catchers::options_catcher
+        ])
         .launch()
         .await?;
 
