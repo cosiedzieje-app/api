@@ -253,7 +253,7 @@ where status is either "ok" or "error", if it is "ok" then res is null and if it
 
 ## <a name="addressStructure"></a>Structure of the address field:
 
-- postalCode: string {self-explanatory}
+- postalCode: string {self-explanatory}, this is optional, does not need to be in structure or can be just null
 - street: string {only street of the address}
 - number: string (since houseNumbers can be 55a) {number of the house}
 
