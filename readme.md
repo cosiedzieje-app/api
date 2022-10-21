@@ -1,6 +1,6 @@
 # Endpoints:
 
-## [GET]/markers:
+## <a name="markers"></a> [GET]/markers:
 
 Returns all inserted markers in the form of a JSON array:
 
@@ -27,7 +27,7 @@ Returns all inserted markers in the form of a JSON array:
 
 ## [GET]/user_markers:
 
-Return all points added by the currently logged in user:
+Returns all markers added by the currently logged in user:
 
 ```
 [{"id":1,
@@ -107,6 +107,11 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 - address: [address](#addressStructure)
 - contactInfo: [contactInfo](#contactInfoStructure)
 - userID: number {ID of the user who added given marker}
+
+## [GET]/markers/\<city>
+Gets all markers where the city is \<city>, in the same form as the [/markers](#markers)
+
+
 
 ## [POST]/add_marker:
 Adds marker which will be supplied by frontend in a JSON format

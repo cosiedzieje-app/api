@@ -134,6 +134,21 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
     Ok(markers)
 }
 
+pub async fn show_markers_by_city(db: &sqlx::MySqlPool,city: &str) -> anyhow::Result<Vec<Marker>> {
+    let markers = sqlx::query_as!(
+        Marker,
+        r#"
+    SELECT id, latitude, longtitude, title, type as `event_type: EventType`,user_id
+    FROM markers
+    WHERE JSON_EXTRACT(address,"$.city") = ?
+    "#,
+        city
+    )
+    .fetch_all(db)
+    .await?;
+
+    Ok(markers)
+}
 pub async fn show_user_markers(db: &sqlx::MySqlPool, user_id: u32) -> anyhow::Result<Vec<FullMarkerOwned>> {
     let markers = sqlx::query_as!(
         FullMarkerOwned,

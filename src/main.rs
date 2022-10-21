@@ -6,7 +6,6 @@ use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use std::env;
 use somsiad_api::fairings;
-use somsiad_api::catchers;
 use figment::{Figment, providers::{Format, Toml}};
 use rocket::fairing::AdHoc;
 use somsiad_api::Config;
@@ -44,11 +43,12 @@ async fn main() -> Result<(), rocket::Error> {
                 remove_marker,
                 user_data,
                 get_user_markers,
+                get_markers_by_city,
             ],
         )
         .mount("/", FileServer::from(relative!("static")))
         .register("/", catchers![
-                  catchers::options_catcher
+            options_catcher
         ])
         .launch()
         .await?;

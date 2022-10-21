@@ -26,6 +26,7 @@ pub struct Address<'r> {
     #[serde(rename = "postalCode")]
     postal_code: &'r str,
     number: &'r str,
+    city: &'r str,
 }
 
 #[derive(Serialize, Deserialize, sqlx::Type)]

@@ -2,15 +2,27 @@ use crate::markers::*;
 use crate::users::login::*;
 use crate::users::register::*;
 use crate::*;
-use rocket::delete;
+use crate::{SomsiadResult, SomsiadStatus};
 use rocket::{
-    error_, get,
-    http::{Cookie, CookieJar},
+    catch, delete, error_, get,
+    http::{Cookie, CookieJar, Method, Status},
     info_, post,
     serde::json::Json,
-    warn_,
+    warn_, Request,
 };
 use sqlx::MySqlPool;
+
+#[catch(404)]
+pub fn options_catcher<'a>(status: Status, request: &Request) -> (Status, SomsiadResult<&'a str>) {
+    if request.method() == Method::Options {
+        (Status::Ok, SomsiadStatus::ok(""))
+    } else {
+        (
+            status,
+            SomsiadStatus::error(format!("Ścieżka {} nie istnieje!", request.uri()).as_str()),
+        )
+    }
+}
 
 #[get("/user_markers")]
 pub async fn get_user_markers(
@@ -38,6 +50,20 @@ pub async fn get_marker(db: &rocket::State<MySqlPool>, id: u32) -> SomsiadResult
         Err(_) => {
             // error_!("Error: {}", e);
             SomsiadStatus::error("Invalid ID")
+        }
+    }
+}
+
+#[get("/markers/<city>", rank = 2)]
+pub async fn get_markers_by_city(
+    db: &rocket::State<MySqlPool>,
+    city: &str,
+) -> SomsiadResult<Vec<Marker>> {
+    match show_markers_by_city(db, city).await {
+        Ok(markers) => SomsiadStatus::ok(markers),
+        Err(e) => {
+            error_!("Error: {}", e);
+            SomsiadStatus::error("Wewnętrzny błąd serwera")
         }
     }
 }
