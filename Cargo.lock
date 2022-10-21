@@ -1962,7 +1962,6 @@ dependencies = [
  "bcrypt",
  "chrono",
  "dotenv",
- "figment",
  "lettre",
  "nanoid",
  "rocket",

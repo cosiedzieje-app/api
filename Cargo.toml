@@ -11,7 +11,6 @@ authors = [ "Marcin Mikuła <marcinmikula840@gmail.com>", "Piotr Jakóbczyk", "P
 [dependencies]
 rocket = { version = "0.5.0-rc.2", features = ["json", "secrets"] }
 serde = { version = "1.0.145", features = [ "derive" ] }
-figment = { version = "0.10.8", features = [ "toml" ] }
 bcrypt = "0.13.0"
 nanoid = "0.4.0"
 lettre = { version = "0.10.1", features = [ "tokio1-native-tls", "tokio1", "sendmail-transport", "serde" ] }
