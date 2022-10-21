@@ -24,7 +24,7 @@ pub struct Address<'r> {
     street: &'r str,
     #[validate(custom = "validate_postal_code")]
     #[serde(rename = "postalCode")]
-    postal_code: &'r str,
+    postal_code: std::option::Option<&'r str>,
     number: &'r str,
 }
 
@@ -38,7 +38,12 @@ pub(super) enum Sex {
     Other,
 }
 
-fn validate_postal_code(postal_code: &str) -> Result<(), ValidationError> {
+fn validate_postal_code(postal_code: &Option<&str>) -> Result<(), ValidationError> {
+    let postal_code = match postal_code {
+        Some(postal_code) => postal_code,
+        None => return Ok(()),
+    };
+
     if postal_code.len() != 6 {
         return Err(ValidationError::new("bad_postal_code"));
     }
