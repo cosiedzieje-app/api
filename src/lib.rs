@@ -1,9 +1,11 @@
 /* modules */
+pub mod fairings;
 pub mod markers;
 pub mod routes;
 pub mod users;
 use rocket::http::Cookie;
 /* Uses */
+pub use rocket::config::SecretKey;
 pub use rocket::serde::json::Json;
 use serde::Serialize;
 pub use validator::Validate;

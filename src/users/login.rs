@@ -17,7 +17,9 @@ pub struct AddressOwned {
     #[serde(rename = "postalCode")]
     postal_code: String,
     number: String,
+    city: String,
 }
+
 #[derive(Serialize)]
 pub struct UserPublicInfo {
     login_name: String,

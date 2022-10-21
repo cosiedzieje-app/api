@@ -22,7 +22,7 @@ alter table full_users_info add foreign key (id) references users (id) on delete
 CREATE TABLE `markers` (
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
 `latitude` double NOT NULL,
-`longtitude` double NOT NULL,
+`longitude` double NOT NULL,
 `title` VARCHAR(25) NOT NULL,
 `description` TEXT NOT NULL,
 `type` ENUM("A","B","C") NOT NULL,
