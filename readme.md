@@ -7,12 +7,12 @@ Returns all inserted markers in the form of a JSON array:
 ```
 [{"id":2,
 "latitude":50.21212,
-"longtitude":1.12121,
+"longitude":1.12121,
 "title":"pomoc dzieciom",
 "type":"NeighborHelp"},
 {"id":3,
 "latitude":50.21212,
-"longtitude":1.12121,
+"longitude":1.12121,
 "title":"pomoc dzieciom", "type":"NeighborHelp",
 "userID":1}]
 ```
@@ -20,7 +20,7 @@ Returns all inserted markers in the form of a JSON array:
 
 - id: number {the id of the marker}
 - latitude: number (double) {coordinate}
-- longtitude: number (double) {coordinate}
+- longitude: number (double) {coordinate}
 - title: string {title of the marker}
 - type: Enum (NeighborHelp/Happening/Charity) {type of the event}
 - userID: number {ID of the user who added given marker}
@@ -32,7 +32,7 @@ Returns all markers added by the currently logged in user:
 ```
 [{"id":1,
 "latitude":50.21212,
-"longtitude":1.12121,
+"longitude":1.12121,
 "title":"pomoc dzieciom",
 "description":"sasas",
 "type":"NeighborHelp",
@@ -66,7 +66,7 @@ Returns full information about Marker with ID \<id>:
 ```
 {"id":1,
 "latitude":50.21212,
-"longtitude":1.12121,
+"longitude":1.12121,
 "title":"pomoc dzieciom",
 "description":"sasas",
 "type":"NeighborHelp",
@@ -98,7 +98,7 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 <a name="markerStructure"></a>Structure:
 - id: number {the id of the marker}
 - latitude: number (double) {coordinate}
-- longtitude: number (double) {coordinate}
+- longitude: number (double) {coordinate}
 - title: string {title of the marker}
 - description: string {description of a given event}
 - type: Enum ("NeighborHelp"/"Happening"/"Charity") {type of the event}
@@ -111,7 +111,9 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 ## [GET]/markers/\<city>
 Gets all markers where the city is \<city>, in the same form as the [/markers](#markers)
 
-
+## [GET]/markers?\<lat>&\<long>&\<dist>
+Gets all markers within distance \<dist> of given coordinates \<lat> (latitude) and \<long> (longitude)
+returns them in the same form as [/markers](#markers)
 
 ## [POST]/add_marker:
 Adds marker which will be supplied by frontend in a JSON format
@@ -119,7 +121,7 @@ e.g:
 ```
 {
 	latitude:50.21212,
-	longtitude:1.12121,title:"pomoc dzieciom",
+	longitude:1.12121,title:"pomoc dzieciom",
 	description:"sasas",
 	type:"NeighborHelp",
 	addTime:1665747948,
