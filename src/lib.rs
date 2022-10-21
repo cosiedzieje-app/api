@@ -3,14 +3,16 @@ pub mod fairings;
 pub mod markers;
 pub mod routes;
 pub mod users;
-use rocket::http::Cookie;
+
+use rocket::{http::Status, outcome::IntoOutcome, request, Request};
 /* Uses */
 pub use rocket::config::SecretKey;
+use rocket::request::FromRequest;
 pub use rocket::serde::json::Json;
 use serde::Serialize;
 pub use validator::Validate;
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 #[serde(tag = "status", content = "res")]
 pub enum SomsiadStatus<T> {
     #[serde(rename = "ok")]
@@ -33,14 +35,24 @@ impl<T> SomsiadStatus<T> {
     }
 }
 
-pub fn validate_id_cookie(id: Option<Cookie>) -> SomsiadResult<u32> {
-    match id {
-        Some(cookie) => match cookie.value().parse().unwrap_or_default() {
-            0 => SomsiadStatus::error("Twój token logowania jest nieprawidłowy"),
-            val @ _ => SomsiadStatus::ok(val),
-        },
-        None => SomsiadStatus::error("Nie jesteś zalogowany"),
+pub type SomsiadResult<T> = Json<SomsiadStatus<T>>;
+
+pub struct UserID(u32);
+impl From<u32> for UserID {
+    fn from(val: u32) -> Self {
+        Self(val)
     }
 }
+#[rocket::async_trait]
+impl<'a> FromRequest<'a> for UserID {
+    type Error = ();
 
-pub type SomsiadResult<T> = Json<SomsiadStatus<T>>;
+    async fn from_request(request: &'a Request<'_>) -> request::Outcome<Self, Self::Error> {
+        request
+            .cookies()
+            .get_private("id")
+            .and_then(|cookie| cookie.value().parse().ok())
+            .map(|id| Self(id))
+            .into_outcome((Status::Unauthorized, ()))
+    }
+}

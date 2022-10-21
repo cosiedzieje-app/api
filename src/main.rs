@@ -41,7 +41,7 @@ async fn main() -> Result<(), rocket::Error> {
             ],
         )
         .mount("/", FileServer::from(relative!("static")))
-        .register("/", catchers![options_catcher])
+        .register("/", catchers![options_catcher, unauthorized_catcher])
         .launch()
         .await?;
 
