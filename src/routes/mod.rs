@@ -29,6 +29,11 @@ pub fn options_catcher<'a>(status: Status, request: &Request) -> (Status, Somsia
     }
 }
 
+#[get("/is_logged")]
+pub async fn is_logged(_user: UserID) -> SomsiadResult<&'static str> {
+    SomsiadStatus::ok("Jesteś zalogowany")
+}
+
 #[get("/user_markers")]
 pub async fn get_user_markers(
     db: &rocket::State<MySqlPool>,

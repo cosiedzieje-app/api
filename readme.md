@@ -5,8 +5,7 @@
 Returns all inserted markers in the form of a JSON array:
 
 ```
-[{"id":2,
-"latitude":50.21212,
+[{"id":2, "latitude":50.21212,
 "longitude":1.12121,
 "title":"pomoc dzieciom",
 "type":"NeighborHelp"},
@@ -206,6 +205,10 @@ If user logs in correctly, it sets a private cookie which represents their id
 
 ## [GET]/logout:
 Removes the private cookie that indicates that a user is logged in
+
+## [GET]/is_logged:
+Return SomsiadStatus::ok if the user is logged in, if not it returns SomsiadStatus::error
+[SomsiadStatus](#somsiadStatus)
 
 ## [GET]/user_data:
 If the user has the private cookie, which indicates that they are logged in set, it displays data about them:

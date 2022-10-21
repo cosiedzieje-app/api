@@ -30,6 +30,7 @@ async fn main() -> Result<(), rocket::Error> {
                 login,
                 register,
                 logout,
+                is_logged,
                 get_markers,
                 add_marker,
                 get_marker,
