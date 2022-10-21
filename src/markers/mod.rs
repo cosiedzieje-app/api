@@ -15,6 +15,8 @@ enum EventType {
     Happening,
     #[sqlx(rename = "C")]
     Charity,
+    #[sqlx(rename = "D")]
+    MassEvent,
 }
 
 #[derive(Serialize, Deserialize /* , sqlx::Type */)]
@@ -42,6 +44,19 @@ pub struct Marker {
     event_type: EventType,
     #[serde(rename = "userID")]
     user_id: i32,
+}
+
+#[derive(Serialize)]
+pub struct MarkerWithDist {
+    id: u32,
+    latitude: f64,
+    longtitude: f64,
+    title: String,
+    #[serde(rename = "type")]
+    event_type: EventType,
+    #[serde(rename = "userID")]
+    user_id: i32,
+    distance_in_km: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -134,7 +149,7 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
     Ok(markers)
 }
 
-pub async fn show_markers_by_city(db: &sqlx::MySqlPool,city: &str) -> anyhow::Result<Vec<Marker>> {
+pub async fn show_markers_by_city(db: &sqlx::MySqlPool, city: &str) -> anyhow::Result<Vec<Marker>> {
     let markers = sqlx::query_as!(
         Marker,
         r#"
@@ -149,7 +164,53 @@ pub async fn show_markers_by_city(db: &sqlx::MySqlPool,city: &str) -> anyhow::Re
 
     Ok(markers)
 }
-pub async fn show_user_markers(db: &sqlx::MySqlPool, user_id: u32) -> anyhow::Result<Vec<FullMarkerOwned>> {
+
+pub async fn show_markers_by_dist(
+    db: &sqlx::MySqlPool,
+    x: f64,
+    y: f64,
+    dist: u32,
+) -> anyhow::Result<Vec<MarkerWithDist>> {
+    // SELECT id, latitude, longtitude, title, type as `event_type: EventType`,user_id
+    let markers = sqlx::query_as!(
+        MarkerWithDist,
+        r#"
+        SELECT 
+        z.id, z.latitude, z.longtitude, z.title, z.type as `event_type: EventType`,user_id,
+        p.distance_unit
+                * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(p.latpoint))
+                * COS(RADIANS(z.latitude))
+                * COS(RADIANS(p.longpoint) - RADIANS(z.longtitude))
+                + SIN(RADIANS(p.latpoint))
+                * SIN(RADIANS(z.latitude))))) AS distance_in_km
+        FROM markers AS z
+        JOIN (   /* these are the query parameters */
+            SELECT  ?  AS latpoint,      ? AS longpoint,
+                    ? AS radius,      111.045 AS distance_unit
+        ) AS p ON 1=1
+        WHERE z.latitude
+        BETWEEN p.latpoint  - (p.radius / p.distance_unit)
+            AND p.latpoint  + (p.radius / p.distance_unit)
+        AND z.longtitude
+        BETWEEN p.longpoint - (p.radius / (p.distance_unit * COS(RADIANS(p.latpoint))))
+            AND p.longpoint + (p.radius / (p.distance_unit * COS(RADIANS(p.latpoint))))
+        ORDER BY distance_in_km
+        LIMIT 15;
+        "#,
+        x,
+        y,
+        dist
+    )
+    .fetch_all(db)
+    .await?;
+
+    Ok(markers)
+}
+
+pub async fn show_user_markers(
+    db: &sqlx::MySqlPool,
+    user_id: u32,
+) -> anyhow::Result<Vec<FullMarkerOwned>> {
     let markers = sqlx::query_as!(
         FullMarkerOwned,
         r#"
