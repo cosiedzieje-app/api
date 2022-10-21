@@ -1,14 +1,11 @@
 use dotenv::dotenv;
 use rocket::fs::relative;
 use rocket::fs::FileServer;
+use somsiad_api::fairings;
 use somsiad_api::routes::*;
 use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use std::env;
-use somsiad_api::fairings;
-use figment::{Figment, providers::{Format, Toml}};
-use rocket::fairing::AdHoc;
-use somsiad_api::Config;
 
 #[macro_use]
 extern crate rocket;
@@ -18,18 +15,14 @@ async fn main() -> Result<(), rocket::Error> {
     dotenv().ok();
     let db = PoolOptions::<MySql>::new()
         .min_connections(0)
-        .max_connections(10)
+        .max_connections(500)
         .test_before_acquire(true)
         .connect(&env::var("DATABASE_URL").expect("Failed to acquire DB URL"))
         .await
         .expect("Failed to connect to db");
 
-    let config = Figment::from(rocket::Config::default())
-        .merge(Toml::file("Rocket.toml").nested());
-
-    let _rocket = rocket::custom(config)
+    let _rocket = rocket::build()
         .attach(fairings::CORS)
-        .attach(AdHoc::config::<Config>())
         .manage(db)
         .mount(
             "/",
@@ -48,9 +41,7 @@ async fn main() -> Result<(), rocket::Error> {
             ],
         )
         .mount("/", FileServer::from(relative!("static")))
-        .register("/", catchers![
-            options_catcher
-        ])
+        .register("/", catchers![options_catcher])
         .launch()
         .await?;
 

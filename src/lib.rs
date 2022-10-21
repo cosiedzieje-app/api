@@ -1,14 +1,14 @@
 /* modules */
+pub mod fairings;
 pub mod markers;
 pub mod routes;
 pub mod users;
-pub mod fairings;
 use rocket::http::Cookie;
 /* Uses */
-pub use rocket::serde::json::Json;
-use serde::{Serialize, Deserialize};
-pub use validator::Validate;
 pub use rocket::config::SecretKey;
+pub use rocket::serde::json::Json;
+use serde::Serialize;
+pub use validator::Validate;
 
 #[derive(Serialize)]
 #[serde(tag = "status", content = "res")]
@@ -44,16 +44,3 @@ pub fn validate_id_cookie(id: Option<Cookie>) -> SomsiadResult<u32> {
 }
 
 pub type SomsiadResult<T> = Json<SomsiadStatus<T>>;
-
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub enum Mode {
-    #[serde(rename = "debug")]
-    Debug,
-    #[serde(rename = "release")]
-    Release
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Config {
-    pub mode: Mode
-}
