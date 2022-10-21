@@ -172,6 +172,7 @@ pub async fn show_markers_by_dist(
     dist: u32,
 ) -> anyhow::Result<Vec<MarkerWithDist>> {
     // SELECT id, latitude, longtitude, title, type as `event_type: EventType`,user_id
+    // Thanks for the formula: http://www.plumislandmedia.net/mysql/haversine-mysql-nearest-loc/
     let markers = sqlx::query_as!(
         MarkerWithDist,
         r#"

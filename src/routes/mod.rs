@@ -68,9 +68,14 @@ pub async fn get_markers_by_city(
     }
 }
 
-#[get("/markers/<x>/<y>/<dist>")]
-pub async fn get_markers_by_dist(db: &rocket::State<MySqlPool>,x: f64, y: f64, dist: u32) -> SomsiadResult<Vec<MarkerWithDist>>{
-    match show_markers_by_dist(db,x,y,dist).await{
+#[get("/markers?<lat>&<long>&<dist>")]
+pub async fn get_markers_by_dist(
+    db: &rocket::State<MySqlPool>,
+    lat: f64,
+    long: f64,
+    dist: u32,
+) -> SomsiadResult<Vec<MarkerWithDist>> {
+    match show_markers_by_dist(db, lat, long, dist).await {
         Ok(markers) => SomsiadStatus::ok(markers),
         Err(e) => {
             error_!("Error: {}", e);
