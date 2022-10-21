@@ -24,10 +24,9 @@ impl Fairing for CORS {
                 "http://localhost:5173",
             ));
         } else {
-            //TODO: Replace with actual domain
             response.set_header(Header::new(
                 "Access-Control-Allow-Origin",
-                "https://localhost:5173",
+                "https://cosiedzieje.mikut.dev",
             ));
         }
 
