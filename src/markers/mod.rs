@@ -42,8 +42,6 @@ pub struct Marker {
     title: String,
     #[serde(rename = "type")]
     event_type: EventType,
-    #[serde(rename = "userID")]
-    user_id: i32,
 }
 
 #[derive(Serialize)]
@@ -54,8 +52,6 @@ pub struct MarkerWithDist {
     title: String,
     #[serde(rename = "type")]
     event_type: EventType,
-    #[serde(rename = "userID")]
-    user_id: i32,
     distance_in_km: Option<f64>,
 }
 
@@ -98,8 +94,6 @@ pub struct FullMarkerOwned {
     address: sqlx::types::Json<AddressOwned>,
     #[serde(rename = "contactInfo")]
     contact_info: sqlx::types::Json<ContactInfo>,
-    #[serde(rename = "userID")]
-    user_id: i32,
 }
 pub async fn delete_marker(
     db: &sqlx::MySqlPool,
@@ -112,7 +106,7 @@ pub async fn delete_marker(
         FullMarkerOwned,
         r#"
         SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, end_time,
-        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>'
         FROM markers
         Where id = ? AND user_id = ?
         "#,
@@ -139,7 +133,7 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
     let markers = sqlx::query_as!(
         Marker,
         r#"
-    SELECT id, latitude, longitude, title, type as `event_type: EventType`,user_id
+    SELECT id, latitude, longitude, title, type as `event_type: EventType`
     FROM markers
     "#
     )
@@ -153,7 +147,7 @@ pub async fn show_markers_by_city(db: &sqlx::MySqlPool, city: &str) -> anyhow::R
     let markers = sqlx::query_as!(
         Marker,
         r#"
-    SELECT id, latitude, longitude, title, type as `event_type: EventType`,user_id
+    SELECT id, latitude, longitude, title, type as `event_type: EventType`
     FROM markers
     WHERE JSON_EXTRACT(address,"$.city") = ?
     "#,
@@ -177,7 +171,7 @@ pub async fn show_markers_by_dist(
         MarkerWithDist,
         r#"
         SELECT 
-        z.id, z.latitude, z.longitude, z.title, z.type as `event_type: EventType`,user_id,
+        z.id, z.latitude, z.longitude, z.title, z.type as `event_type: EventType`,
         p.distance_unit
                 * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(p.latpoint))
                 * COS(RADIANS(z.latitude))
@@ -216,7 +210,7 @@ pub async fn show_user_markers(
         FullMarkerOwned,
         r#"
         SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, end_time,
-        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>'
         FROM markers WHERE user_id = ?
         "#,
         user_id
@@ -232,7 +226,7 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
         FullMarkerOwned,
         r#"
         SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, end_time,
-        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>'
         FROM markers Where id = ?
         "#,
         id
