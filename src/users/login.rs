@@ -22,7 +22,7 @@ pub struct AddressOwned {
 
 #[derive(Serialize)]
 pub struct UserPublicInfo {
-    login_name: String,
+    username: String,
     name: String,
     surname: String,
     email: String,
@@ -57,7 +57,7 @@ impl UserPublicInfo {
         let user = sqlx::query_as!(
             UserPublicInfo,
             r#"
-        SELECT u.name as login_name, ext.name as name, ext.surname as surname, u.email as email, 
+        SELECT u.name as username, ext.name as name, ext.surname as surname, u.email as email, 
         ext.sex as `sex: Sex`, ext.address as `address: sqlx::types::Json<AddressOwned>`, ext.reputation as `reputation: i32`
         FROM users as u 
         INNER JOIN full_users_info as ext ON u.id = ext.id
