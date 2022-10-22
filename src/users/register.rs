@@ -22,9 +22,6 @@ pub struct UserRegister<'r> {
 #[derive(Deserialize, Serialize, Validate)]
 pub struct Address<'r> {
     street: &'r str,
-    #[validate(custom = "validate_postal_code")]
-    #[serde(rename = "postalCode")]
-    postal_code: std::option::Option<&'r str>,
     number: &'r str,
     city: &'r str,
 }
@@ -37,28 +34,6 @@ pub(super) enum Sex {
     Male,
     #[sqlx(rename = "O")]
     Other,
-}
-
-fn validate_postal_code(postal_code: &Option<&str>) -> Result<(), ValidationError> {
-    let postal_code = match postal_code {
-        Some(postal_code) => postal_code,
-        None => return Ok(()),
-    };
-
-    if postal_code.len() != 6 {
-        return Err(ValidationError::new("bad_postal_code"));
-    }
-
-    let splits: Vec<&str> = postal_code.split('-').collect();
-    if splits.len() != 2 || splits[0].len() != 2 || splits[1].len() != 3 {
-        return Err(ValidationError::new("bad_postal_code"));
-    }
-
-    if !splits[0].chars().all(char::is_numeric) || !splits[1].chars().all(char::is_numeric) {
-        return Err(ValidationError::new("bad_postal_code"));
-    }
-
-    Ok(())
 }
 
 impl UserRegister<'_> {
