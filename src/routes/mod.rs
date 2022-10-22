@@ -6,7 +6,7 @@ use crate::{SomsiadResult, SomsiadStatus};
 use rocket::{
     catch, delete, error_, get,
     http::{Cookie, CookieJar, Method, Status},
-    info_, post,
+    info_, post, put,
     serde::json::Json,
     warn_, Request,
 };
@@ -100,7 +100,7 @@ pub async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Vec<Mar
     }
 }
 
-#[post("/add_marker", format = "json", data = "<marker>")]
+#[put("/marker", format = "json", data = "<marker>")]
 pub async fn add_marker(
     db: &rocket::State<MySqlPool>,
     marker: Json<FullMarker<'_>>,
