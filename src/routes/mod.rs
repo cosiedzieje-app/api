@@ -11,6 +11,7 @@ use rocket::{
     warn_, Request,
 };
 use sqlx::MySqlPool;
+use validator::ValidationErrorsKind::*;
 
 #[catch(401)]
 pub fn unauthorized_catcher() -> SomsiadResult<&'static str> {
@@ -132,6 +133,7 @@ pub async fn remove_marker(
         Ok(marker) => SomsiadStatus::ok(marker),
     }
 }
+
 #[post("/register", format = "json", data = "<user>")]
 pub async fn register(
     db: &rocket::State<MySqlPool>,
@@ -141,7 +143,14 @@ pub async fn register(
         return SomsiadStatus::errors(
             e.errors()
                 .iter()
-                .map(|(field, _)| field.to_string())
+                .map(|(_, x)| match x {
+                    Struct(err) => err
+                        .errors()
+                        .iter()
+                        .map(|(field, _)| field.to_string())
+                        .collect(),
+                    _ => unreachable!("Imagine validating Lists or fields"),
+                })
                 .collect(),
         );
     }
