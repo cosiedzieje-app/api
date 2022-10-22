@@ -14,8 +14,6 @@ pub struct UserLogin<'r> {
 #[derive(Serialize, Deserialize)]
 pub struct AddressOwned {
     street: String,
-    #[serde(rename = "postalCode")]
-    postal_code: String,
     number: String,
     city: String,
 }
