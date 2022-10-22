@@ -77,6 +77,7 @@ pub struct FullMarker<'r> {
     start_time: Option<DateTime<Utc>>,
     #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
+    #[serde(default)]
     end_time: Option<DateTime<Utc>>,
     address: Address<'r>,
     #[serde(rename = "contactInfo")]
@@ -102,6 +103,7 @@ pub struct FullMarkerOwned {
     start_time: Option<DateTime<Utc>>,
     #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
+    #[serde(default)]
     end_time: Option<DateTime<Utc>>,
     address: sqlx::types::Json<AddressOwned>,
     #[serde(rename = "contactInfo")]
