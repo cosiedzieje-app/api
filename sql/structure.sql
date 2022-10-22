@@ -25,7 +25,7 @@ CREATE TABLE `markers` (
 `longitude` double NOT NULL,
 `title` VARCHAR(25) NOT NULL,
 `description` TEXT NOT NULL,
-`type` ENUM("A","B","C") NOT NULL,
+`type` ENUM("A","B","C","D") NOT NULL,
 `add_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `end_time` TIMESTAMP NULL DEFAULT NULL,
 `address` JSON NOT NULL,

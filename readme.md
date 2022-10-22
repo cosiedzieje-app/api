@@ -29,7 +29,7 @@ Returns all inserted markers in the form of a JSON array:
 - latitude: number (double) {coordinate}
 - longitude: number (double) {coordinate}
 - title: string {title of the marker}
-- type: Enum (NeighborHelp/Happening/Charity) {type of the event}
+- type: Enum (NeighborHelp/Happening/Charity/MassEvent) {type of the event}
 - userID: number {ID of the user who added given marker}
 
 ## [GET]/user_markers:
@@ -112,7 +112,7 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 - longitude: number (double) {coordinate}
 - title: string {title of the marker}
 - description: string {description of a given event}
-- type: Enum ("NeighborHelp"/"Happening"/"Charity") {type of the event}
+- type: Enum ("NeighborHelp"/"Happening"/"Charity"/"MassEvent") {type of the event}
 - addTime: Unix milis {Time when the marker got added, optional when adding}
 - endTime: Unix milis/Nothing {If present - time when the marker expires}
 - address: [address](#addressStructure)
