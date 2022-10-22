@@ -33,7 +33,7 @@ impl Fairing for CORS {
 
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
-            "POST, GET, DELETE, OPTIONS",
+            "POST, GET, DELETE, OPTIONS, PUT",
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Headers",
