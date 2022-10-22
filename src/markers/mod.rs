@@ -101,6 +101,7 @@ pub struct FullMarkerOwned {
     #[serde(rename = "userID")]
     user_id: i32,
 }
+
 pub async fn delete_marker(
     db: &sqlx::MySqlPool,
     user_id: u32,

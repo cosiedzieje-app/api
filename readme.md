@@ -210,9 +210,22 @@ Removes the private cookie that indicates that a user is logged in
 Return SomsiadStatus::ok if the user is logged in, if not it returns SomsiadStatus::error
 [SomsiadStatus](#somsiadStatus)
 
+## [GET]/user/\<id>
+Gets public info about the user with id \<id>
+
+###### Structure of PublicInfo:
+```
+{username:"root",
+name:"Paweł",
+surname:"Kowalski",
+sex:"Other",
+reputation:0}
+```
+
 ## [GET]/user_data:
 If the user has the private cookie, which indicates that they are logged in set, it displays data about them:
 e.g:
+###### Structure of PrivateInfo:
 ```
 {"username":"root",
 "name":"Paweł",

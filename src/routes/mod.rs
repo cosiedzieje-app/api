@@ -145,7 +145,6 @@ pub async fn register(
                 .collect(),
         );
     }
-
     match user.add_to_db(db).await {
         Err(e) => match e.to_string().split(' ').last().unwrap_or_default() {
             "'email'" => SomsiadStatus::error("Podany e-mail jest zajęty"),
@@ -195,11 +194,25 @@ pub async fn logout(cookies: &CookieJar<'_>) -> SomsiadResult<()> {
 }
 
 #[get("/user_data")]
-pub async fn user_data<'a>(
+pub async fn user_data(
     db: &rocket::State<MySqlPool>,
     user_id: UserID,
+) -> SomsiadResult<UserPrivateInfo> {
+    match UserPrivateInfo::from_id(db, user_id.0).await {
+        Ok(user) => SomsiadStatus::ok(user),
+        Err(e) => {
+            error_!("Internal error: {}", e);
+            SomsiadStatus::error("Wewnętrzny błąd")
+        }
+    }
+}
+
+#[get("/user/<id>")]
+pub async fn get_user_data(
+    db: &rocket::State<MySqlPool>,
+    id: u32,
 ) -> SomsiadResult<UserPublicInfo> {
-    match UserPublicInfo::from_id(db, user_id.0).await {
+    match UserPublicInfo::from_id(db, id).await {
         Ok(user) => SomsiadStatus::ok(user),
         Err(e) => {
             error_!("Internal error: {}", e);
