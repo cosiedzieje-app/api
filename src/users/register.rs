@@ -8,7 +8,6 @@ use super::login::UserLogin;
 #[derive(Deserialize, Validate)]
 pub struct UserRegister<'r> {
     #[validate]
-    #[serde(flatten)]
     login: UserLogin<'r>,
     username: &'r str,
     name: &'r str,

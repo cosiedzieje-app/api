@@ -143,13 +143,13 @@ pub async fn register(
         return SomsiadStatus::errors(
             e.errors()
                 .iter()
-                .map(|(_, x)| match x {
+                .map(|(field, err_kinds)| match err_kinds {
                     Struct(err) => err
                         .errors()
                         .iter()
                         .map(|(field, _)| field.to_string())
                         .collect(),
-                    _ => unreachable!("Imagine validating Lists or fields"),
+                    _ => field.to_string(),
                 })
                 .collect(),
         );
