@@ -126,7 +126,7 @@ Gets all markers where the city is \<city>, in the same form as the [/markers](#
 Gets all markers within distance \<dist> of given coordinates \<lat> (latitude) and \<long> (longitude)
 returns them in the same form as [/markers](#markers)
 
-## [PUT]/marker:
+## [PUT]/markers:
 Adds marker which will be supplied by frontend in a JSON format
 e.g:
 ```

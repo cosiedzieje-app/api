@@ -100,7 +100,7 @@ pub async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Vec<Mar
     }
 }
 
-#[put("/marker", format = "json", data = "<marker>")]
+#[put("/markers", format = "json", data = "<marker>")]
 pub async fn add_marker(
     db: &rocket::State<MySqlPool>,
     marker: Json<FullMarker<'_>>,
