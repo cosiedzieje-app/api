@@ -5,15 +5,23 @@
 Returns all inserted markers in the form of a JSON array:
 
 ```
-[{"id":2, "latitude":50.21212,
-"longitude":1.12121,
-"title":"pomoc dzieciom",
-"type":"NeighborHelp"},
-{"id":3,
-"latitude":50.21212,
-"longitude":1.12121,
-"title":"pomoc dzieciom", "type":"NeighborHelp",
-"userID":1}]
+[
+	{
+		id:2, 
+		latitude:50.21212,
+		longitude:1.12121,
+		title:"pomoc dzieciom",
+		type:"NeighborHelp"
+	},
+	{
+		id:3,
+		latitude:50.21212,
+		longitude:1.12121,
+		title:"pomoc dzieciom", 
+		type:"NeighborHelp",
+		userID:1
+	}
+]
 ```
 ###### Structure of a marker returned by this endpoint:
 
@@ -29,32 +37,35 @@ Returns all inserted markers in the form of a JSON array:
 Returns all markers added by the currently logged in user:
 
 ```
-[{"id":1,
-"latitude":50.21212,
-"longitude":1.12121,
-"title":"pomoc dzieciom",
-"description":"sasas",
-"type":"NeighborHelp",
-"addTime":1665747948,
-"endTime":1666784387,
-"address":{
-	"street":"Jagiellonska",
-	"postalCode": "41-207",
-	"number":"13"
-},
-contactInfo:{
-	name: "Paweł",
-	surname: "Kowalksi",
-	address: {
-		postalCode: "41-207",
-		street: "Jagiellonska",
-		number: "13",
-	},
-	method:{
-		type: "PhoneNumber",
-		val: "123456789"
+[
+	{
+		id:1,
+		latitude:50.21212,
+		longitude:1.12121,
+		title:"pomoc dzieciom",
+		description:"sasas",
+		type:"NeighborHelp",
+		addTime:1665747948,
+		endTime:1666784387,
+		address:{
+			street:"Jagiellonska",
+			city: "Sosnowiec",
+			number:"13"
+		},
+		contactInfo:{
+			name: "Paweł",
+			surname: "Kowalksi",
+			address: {
+				postalCode: "41-207",
+				street: "Jagiellonska",
+				number: "13",
+			},
+			method:{
+				type: "PhoneNumber",
+				val: "123456789"
+			}
 	}
-}]
+]
 ```
 
 ## [GET]/markers/\<id>:
@@ -63,32 +74,33 @@ Returns full information about Marker with ID \<id>:
 
 <a name="fullMarkerStructure"></a>
 ```
-{"id":1,
-"latitude":50.21212,
-"longitude":1.12121,
-"title":"pomoc dzieciom",
-"description":"sasas",
-"type":"NeighborHelp",
-"addTime":1665747948,
-"endTime":1666784387,
-"address":{
-	"street":"Jagiellonska",
-	"postalCode": "41-207",
-	"number":"13"
-},
-"contactInfo":{
-	"name": "Paweł",
-	"surname": "Kowalksi",
-	"address": {
-		"postalCode": "41-207",
-		"street": "Jagiellonska",
-		"number": "13",
+{
+	id:1,
+	latitude:50.21212,
+	longitude:1.12121,
+	title:"pomoc dzieciom",
+	description:"sasas",
+	type:"NeighborHelp",
+	addTime:1665747948,
+	endTime:1666784387,
+	address:{
+		street:"Jagiellonska",
+		city: "Sosnowiec",
+		number:"13"
 	},
-	"method":{
-		"type": "PhoneNumber",
-		"val": "123456789"
-	},
-"userID": 1
+	contactInfo:{
+		name: "Paweł",
+		surname: "Kowalksi",
+		address: {
+			street: "Jagiellonska",
+			city: "Sosnowiec",
+			number: "13",
+		},
+		method:{
+			type: "PhoneNumber",
+			val: "123456789"
+		},
+	userID: 1
 }
 ```
 
@@ -126,7 +138,7 @@ e.g:
 	addTime:1665747948,
 	endTime:1666784387,
 	address: {
-		postalCode: "41-207",
+		city: "Sosnowiec",
 		street: "Jagiellonska",
 		number: "13",
 	},
@@ -134,7 +146,7 @@ e.g:
 		name: "Paweł",
 		surname: "Kowalksi",
 		address: {
-			postalCode: "41-207",
+			city: "Sosnowiec",
 			street: "Jagiellonska",
 			number: "13",
 		},
@@ -168,7 +180,7 @@ e.g:
     sex: 'Male',
     reputation: 1337,
     address: {
-      postalCode: "42-230",
+      city: "Sosnowiec",
       street: "Jagiellonska",
       number: "13",
     }
@@ -215,11 +227,13 @@ Gets public info about the user with id \<id>
 
 ###### Structure of PublicInfo:
 ```
-{username:"root",
-name:"Paweł",
-surname:"Kowalski",
-sex:"Other",
-reputation:0}
+{
+	username:"root",
+	name:"Paweł",
+	surname:"Kowalski",
+	sex:"Other",
+	reputation:0
+}
 ```
 
 ## [GET]/user_data:
@@ -227,18 +241,19 @@ If the user has the private cookie, which indicates that they are logged in set,
 e.g:
 ###### Structure of PrivateInfo:
 ```
-{"username":"root",
-"name":"Paweł",
-"surname":"Kowalski",
-"email":"example@gmail.com",
-"sex":"Male",
-"address":{
-	"street":"Jagiellonska",
-	"postalCode": "41-207",
-	"country": "Poland",
-	"number":13
-},
-"reputation":1337}
+{
+	username:"root",
+	name:"Paweł",
+	surname:"Kowalski",
+	email:"example@gmail.com",
+	sex:"Male",
+	address:{
+		street:"Jagiellonska",
+		city: "Sosnowiec",
+		number: 13
+	},
+	reputation:1337
+}
 ```
 Structure:
 [user structure](#userStructure) but without the password
@@ -252,15 +267,15 @@ Responds with [SomsiadStatus](#somsiadStatus)
 If everything goes correctly it is:
 ```
 {
-    "status": "ok",
-    "res": null 
+    status: "ok",
+    res: null 
 }
 ```
 <a name="somsiadError"></a>If it does not, it is:
 ```
 {
-    "status": "error",
-    "res": [
+    status: "error",
+    res: [
         "Podany e-mail jest zajęty"
     ]
 }
@@ -277,10 +292,9 @@ where status is either "ok" or "error", if it is "ok" then res is null and if it
 e.g:
 ```
     address: {
-      postalCode: "42-230",
       street: "Jagiellonska",
       number: "13",
-      country: "Poland"
+      city: "Sosnowiec"
     }
   }
 ```
@@ -301,7 +315,7 @@ contactInfo:{
 	surname: "Kowalksi",
 	address: {
 		postalCode: "41-207",
-		street: "Jagiellonska",
+		city: "Sosnowiec",
 		number: 13,
 	},
 	method:{
