@@ -18,7 +18,7 @@
               body: JSON.stringify(
                   {
 		    login:{
-			email: 'gmail.com',
+			email: 'ex@gmail.com',
                         password: "toor"
 		    },
                     username: "riot",
@@ -51,7 +51,7 @@
               },
               body: JSON.stringify(
                 {
-			email: 'example@gmąil.com',
+			email: 'ex@gmail.com',
 			password: "toor"})
                 }
             );
@@ -62,7 +62,7 @@
     </script>
     <script>
         (async () => {
-            const rawResponse = await fetch('/marker', {
+            const rawResponse = await fetch('/markers', {
               method: 'PUT',
               headers: {
                 'Accept': 'application/json',
@@ -74,6 +74,7 @@
 				longitude:1.12121,title:"pomoc dzieciom",
 				description:"sasas",
 				type:"NeighborHelp",
+			        startTime:1667784387, 
 				endTime:1666784387,
 				address: {
 					postalCode: "41-207",

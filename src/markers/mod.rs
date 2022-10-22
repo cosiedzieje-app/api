@@ -72,6 +72,10 @@ pub struct FullMarker<'r> {
     #[serde(default)]
     add_time: DateTime<Utc>,
     #[serde(with = "ts_seconds_option")]
+    #[serde(rename = "startTime")]
+    #[serde(default)]
+    start_time: Option<DateTime<Utc>>,
+    #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
     end_time: Option<DateTime<Utc>>,
     address: Address<'r>,
@@ -93,6 +97,10 @@ pub struct FullMarkerOwned {
     #[serde(default)]
     add_time: DateTime<Utc>,
     #[serde(with = "ts_seconds_option")]
+    #[serde(rename = "startTime")]
+    #[serde(default)]
+    start_time: Option<DateTime<Utc>>,
+    #[serde(with = "ts_seconds_option")]
     #[serde(rename = "endTime")]
     end_time: Option<DateTime<Utc>>,
     address: sqlx::types::Json<AddressOwned>,
@@ -112,7 +120,7 @@ pub async fn delete_marker(
     let marker = sqlx::query_as!(
         FullMarkerOwned,
         r#"
-        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, end_time,
+        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, start_time, end_time,
         address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
         FROM markers
         Where id = ? AND user_id = ?
@@ -216,7 +224,7 @@ pub async fn show_user_markers(
     let markers = sqlx::query_as!(
         FullMarkerOwned,
         r#"
-        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, end_time,
+        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time,start_time, end_time,
         address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
         FROM markers WHERE user_id = ?
         "#,
@@ -232,7 +240,7 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
     let marker = sqlx::query_as!(
         FullMarkerOwned,
         r#"
-        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time, end_time,
+        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time,start_time, end_time,
         address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
         FROM markers Where id = ?
         "#,
@@ -248,14 +256,15 @@ impl<'r> FullMarker<'r> {
         let added = sqlx::query!(
             r#"
             INSERT INTO `markers` (`latitude`, `longitude`, `title`, `description`,
-            `type`, `add_time`, `end_time`, `address`, `contact_info`, `user_id`) 
-            VALUES (?,?,?,?,?,?,?,?,?,?)"#,
+            `type`, `add_time`, `start_time`, `end_time`, `address`, `contact_info`, `user_id`) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?)"#,
             self.latitude,
             self.longitude,
             self.title,
             self.description,
             self.event_type,
             chrono::offset::Utc::now(),
+            self.start_time,
             self.end_time,
             serde_json::to_string(&self.address)?,
             serde_json::to_string(&self.contact_info)?,

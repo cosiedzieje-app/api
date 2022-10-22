@@ -46,6 +46,7 @@ Returns all markers added by the currently logged in user:
 		description:"sasas",
 		type:"NeighborHelp",
 		addTime:1665747948,
+		startTime:1675747948,
 		endTime:1666784387,
 		address:{
 			street:"Jagiellonska",
@@ -82,6 +83,7 @@ Returns full information about Marker with ID \<id>:
 	description:"sasas",
 	type:"NeighborHelp",
 	addTime:1665747948,
+	startTime:1675747948,
 	endTime:1666784387,
 	address:{
 		street:"Jagiellonska",
@@ -114,6 +116,7 @@ if the ID is not present in the DB, it responds with [SomsiadStatus::error](#som
 - description: string {description of a given event}
 - type: Enum ("NeighborHelp"/"Happening"/"Charity"/"MassEvent") {type of the event}
 - addTime: Unix milis {Time when the marker got added, optional when adding}
+- startTime: Unix milis {Time when the event in the marker start, opitonal}
 - endTime: Unix milis/Nothing {If present - time when the marker expires}
 - address: [address](#addressStructure)
 - contactInfo: [contactInfo](#contactInfoStructure)
@@ -136,6 +139,7 @@ e.g:
 	description:"sasas",
 	type:"NeighborHelp",
 	addTime:1665747948,
+	startTime:1675747948,
 	endTime:1666784387,
 	address: {
 		city: "Sosnowiec",

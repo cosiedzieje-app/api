@@ -27,13 +27,14 @@ CREATE TABLE `markers` (
 `description` TEXT NOT NULL,
 `type` ENUM("A","B","C","D") NOT NULL,
 `add_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`start_time` TIMESTAMP NULL DEFAULT NULL,
 `end_time` TIMESTAMP NULL DEFAULT NULL,
 `address` JSON NOT NULL,
 `contact_info` JSON NOT NULL,
 `user_id` INT NOT NULL,
 PRIMARY KEY (`ID`)
 ) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_polish_ci;
-alter table `markers` add foreign key (`user_id`) references users (`id`)
+-- alter table `markers` add foreign key (`user_id`) references users (`id`)
 
 /* Example address JSON:
 {

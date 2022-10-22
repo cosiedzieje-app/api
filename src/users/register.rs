@@ -1,7 +1,7 @@
 use bcrypt::{hash_with_salt, DEFAULT_COST};
 use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError};
+use validator::Validate;
 
 use super::login::UserLogin;
 
