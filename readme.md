@@ -159,8 +159,8 @@ e.g:
 ```
   {
     login: {
-	email: 'example@sasad.com',
-	password: "toor"
+		email: 'example@sasad.com',
+		password: "toor"
     }, 
     username: "lol",
     name: "Paweł",
@@ -214,7 +214,7 @@ Return SomsiadStatus::ok if the user is logged in, if not it returns SomsiadStat
 If the user has the private cookie, which indicates that they are logged in set, it displays data about them:
 e.g:
 ```
-{"login_name":"root",
+{"username":"root",
 "name":"Paweł",
 "surname":"Kowalski",
 "email":"example@gmail.com",
