@@ -24,8 +24,9 @@ async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .attach(fairings::CORS)
         .manage(db)
+        .mount("/", FileServer::from(relative!("/static")).rank(1))
         .mount(
-            "/",
+            "/api",
             routes![
                 login,
                 register,
@@ -41,7 +42,6 @@ async fn main() -> Result<(), rocket::Error> {
                 get_markers_by_dist,
             ],
         )
-        .mount("/", FileServer::from(relative!("static")))
         .register("/", catchers![options_catcher, unauthorized_catcher])
         .launch()
         .await?;
