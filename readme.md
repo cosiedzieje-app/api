@@ -1,19 +1,18 @@
 # Jak uruchomić część backendową:
-1. Upewnij się że masz zainstalowane cargo (package manager rusta) w najnowszej wersji
-2. Sklonuj repo na swój lokalny dysk
-3. Stwórz plik env i zamieść w nim zmienną DATABASE_URL zawierającą adres URL bazy danych
+1. Upewnij się że masz zainstalowane `cargo` (package manager Rusta) w najnowszej wersji
+2. Sklonuj repozytorium na swój lokalny dysk
+3. Stwórz plik `.env` w głównym katalogu repozytorium i zamieść w nim zmienną `DATABASE_URL` zawierającą adres URL bazy danych
 np.:
 ```
 DATABASE_URL = "mysql://nazwaUzytkowniak:Haslo@localhost/bazaDanych"
 ```
-4. Stwórz plik Rocket.toml i umieśc w nim następującą treść, gdzie wartosćią secret_key jest 256-bitowy klucz base64, który wygenerowany może być za pomocą komendy: `openssl rand -base64 32`
+4. Stwórz plik Rocket.toml i umieść w nim następującą treść, gdzie wartością `secret_key` jest 256-bitowy klucz base64, który wygenerowany może być za pomocą komendy: `openssl rand -base64 32`
 ```
 [default]
 secret_key = ""
 ```
 5. Skompiluj i uruchom program za pomocą: `cargo run --release`
 6. Po kompilacji strona powinna działać na `localhost:8000`
-
 
 # Endpoints:
 
