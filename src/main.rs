@@ -24,7 +24,7 @@ async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .attach(fairings::CORS)
         .manage(db)
-        .mount("/", FileServer::from(relative!("static")).rank(1))
+        .mount("/", FileServer::from(relative!("/static")).rank(1))
         .mount(
             "/api",
             routes![
