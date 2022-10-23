@@ -158,18 +158,18 @@ Returns full information about Marker with ID \<id>:
 if the ID is not present in the DB, it responds with [SomsiadStatus::error](#somsiadError)
 
 <a name="markerStructure"></a>Structure:
-- id: number {the id of the marker}
-- latitude: number (double) {coordinate}
-- longitude: number (double) {coordinate}
-- title: string {title of the marker}
-- description: string {description of a given event}
-- type: Enum ("NeighborHelp"/"Happening"/"Charity"/"MassEvent") {type of the event}
-- addTime: Unix milis {Time when the marker got added, optional when adding}
-- startTime: Unix milis {Time when the event in the marker start, opitonal}
-- endTime: Unix milis/Nothing {If present - time when the marker expires}
-- address: [address](#addressStructure)
-- contactInfo: [contactInfo](#contactInfoStructure)
-- userID: number {ID of the user who added given marker}
+- `id`: *number* - the id of the marker
+- `latitude`: *number* (double) - coordinate
+- `longitude`: *number* (double) - coordinate
+- `title`: *string* - title of the marker
+- `description`: *string* - description of a given event
+- `type`: *Enum* ("NeighborHelp"/"Happening"/"Charity"/"MassEvent") - type of the event
+- `addTime`: *Unix milis* - Time when the marker got added, optional when adding
+- `startTime`: *Unix milis* - Time when the event in the marker start, opitonal
+- `endTime`: *Unix milis/Nothing* - If present - time when the marker expires
+- `address`: [address](#addressStructure)
+- `contactInfo`: [contactInfo](#contactInfoStructure)
+- `userID`: *number* - ID of the user who added given marker
 
 ## [GET]/markers/\<city>
 Gets all markers where the city is \<city>, in the same form as the [/markers](#markers)
@@ -240,15 +240,15 @@ e.g:
   }
 ```
 <a name="userStructure"></a>Structure:
-- login: JSON array:
-    -email: string, validated server-side, unique {email of the user being registred}
-    -password: string {unhashed password of the user being registered}
-- username: string, unique {username of a given user}
-- name: string {real world name}
-- surname: string {self-explanatory}
-- sex: Enum ('Male','Female','Other') {self-explanatory}
-- reputation number {Reputation points of the user, optional}
-- address: [address](#addressStructure)
+- `login`: *JSON array*:
+    - `email`: *string, validated server-side, unique* - email of the user being registred
+    - `password`: *string* - unhashed password of the user being registered
+- `username`: *string, unique* - username of a given user
+- `name`: *string* - real world name
+- `surname`: *string* - self-explanatory
+- `sex`: *Enum ('Male','Female','Other')* - self-explanatory
+- `reputation` *number* - Reputation points of the user, optional
+- `address`: [address](#addressStructure)
 
 Responds with [SomsiadStatus](#somsiadStatus)
 
@@ -262,8 +262,8 @@ e.g.:
 	}
 ```
 Structure:
-- email: string, validated server-side, unique {email of the user being registred}
-- password: string {unhashed password of the user being registered}
+- `email`: *string, validated server-side, unique* - email of the user being registred
+- `password`: *string* - unhashed password of the user being registered
 
 Responds with [SomsiadStatus](#somsiadStatus)
 If user logs in correctly, it sets a private cookie which represents their id
@@ -337,10 +337,10 @@ where status is either "ok" or "error", if it is "ok" then res is null and if it
 
 ## <a name="addressStructure"></a>Structure of the address field:
 
-- postalCode: string {self-explanatory}, this is optional, does not need to be in structure or can be just null
-- street: string {only street of the address}
-- number: string (since houseNumbers can be 55a) {number of the house}
-- country: string {self-explanatory}
+- `postalCode`: *string* - self-explanatory, this is optional, does not need to be in structure or can be just null
+- `street`: *string* - only street of the address
+- `number`: *string (since houseNumbers can be 55a)* - number of the house
+- `country`: *string* - self-explanatory
 
 e.g:
 ```
@@ -354,12 +354,12 @@ e.g:
 
 ## <a name="contactInfoStructure"></a>Structure of the ContactInfo field:
 
-- name: string {self-explanatory}
-- surname: string {self-explanatory}
-- address: [addres](#addressStructure)
-- method:
-	- type: Enum ("PhoneNumber"/Email) {type of the contact method} 
-	- val: string {Either phone number or email with which the user adding the marker can be contacted}
+- `name`: *string* {self-explanatory}
+- `surname`: *string* {self-explanatory}
+- `address`: [addres](#addressStructure)
+- `method`:
+	- `type`: *Enum ("PhoneNumber"/Email)* - type of the contact method}
+	- `val`: *string* - Either phone number or email with which the user adding the marker can be contacted
 
 e.g:
 ```

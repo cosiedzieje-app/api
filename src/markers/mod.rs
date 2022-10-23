@@ -248,7 +248,7 @@ pub async fn show_user_markers(
     Ok(markers)
 }
 
-pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMarkerOwned> {
+/* pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMarkerOwned> {
     let marker = sqlx::query_as!(
         FullMarkerOwned,
         r#"
@@ -262,7 +262,7 @@ pub async fn show_marker(db: &sqlx::MySqlPool, id: u32) -> anyhow::Result<FullMa
     .await?;
 
     Ok(marker)
-}
+} */
 impl<'r> FullMarker<'r> {
     pub async fn add_marker(&self, db: &sqlx::MySqlPool, user_id: u32) -> anyhow::Result<bool> {
         let added = sqlx::query!(
