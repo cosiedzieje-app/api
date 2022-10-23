@@ -176,6 +176,7 @@ pub async fn delete_marker(
 
     Ok(marker)
 }
+
 pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<FullMarkerOwned>> {
     let markers = sqlx::query_as!(
         FullMarkerOwned,

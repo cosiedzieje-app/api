@@ -49,17 +49,6 @@ pub async fn get_user_markers(
     }
 }
 
-#[get("/markers/<id>")]
-pub async fn get_marker(db: &rocket::State<MySqlPool>, id: u32) -> SomsiadResult<FullMarkerOwned> {
-    match show_marker(db, id).await {
-        Ok(marker) => SomsiadStatus::ok(marker),
-        Err(_) => {
-            // error_!("Error: {}", e);
-            SomsiadStatus::error("Invalid ID")
-        }
-    }
-}
-
 #[get("/markers/<city>", rank = 2)]
 pub async fn get_markers_by_city(
     db: &rocket::State<MySqlPool>,

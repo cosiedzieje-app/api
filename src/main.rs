@@ -35,7 +35,6 @@ async fn main() -> Result<(), rocket::Error> {
                 is_logged,
                 get_markers,
                 add_marker,
-                get_marker,
                 remove_marker,
                 get_user_markers,
                 get_markers_by_city,
