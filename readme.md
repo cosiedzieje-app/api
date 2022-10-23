@@ -6,31 +6,80 @@ Returns all inserted markers in the form of a JSON array:
 
 ```
 [
-	{
-		id:2, 
-		latitude:50.21212,
-		longitude:1.12121,
-		title:"pomoc dzieciom",
-		type:"NeighborHelp"
-	},
-	{
-		id:3,
-		latitude:50.21212,
-		longitude:1.12121,
-		title:"pomoc dzieciom", 
-		type:"NeighborHelp",
-		userID:1
-	}
+  {
+    id:1,
+    latitude:50.21212,
+    longitude:1.12121,
+    title:"pomoc dzieciom",
+    description:"sasas",
+    type:"NeighborHelp",
+    addTime:1665747948,
+    startTime:1675747948,
+    endTime:1666784387,
+    address: {
+      street:"Jagiellonska",
+      city: "Sosnowiec",
+      number:"13"
+    },
+    contactInfo: {
+      name: "Paweł",
+      surname: "Kowalski",
+      address: {
+        street: "Jagiellonska",
+        city: "Sosnowiec",
+        number: "13",
+      },
+      method: {
+        type: "PhoneNumber",
+        val: "123456789"
+      },
+    userID: 1
+  },
+  {
+    id:2,
+    latitude:50.21212,
+    longitude:1.12121,
+    title:"pomoc dzieciom",
+    description:"asasas",
+    type:"NeighborHelp",
+    addTime:1665747950,
+    startTime:1675747950,
+    endTime:1666784390,
+    address: {
+      street:"Jagiellonska",
+      city: "Sosnowiec",
+      number:"13"
+    },
+    contactInfo: {
+      name: "Paweł",
+      surname: "Kowalski",
+      address: {
+        street: "Jagiellonska",
+        city: "Sosnowiec",
+        number: "13",
+      },
+      method: {
+        type: "PhoneNumber",
+        val: "123456789"
+      },
+    userID: 1
+  }
 ]
 ```
 ###### Structure of a marker returned by this endpoint:
 
-- id: number {the id of the marker}
-- latitude: number (double) {coordinate}
-- longitude: number (double) {coordinate}
-- title: string {title of the marker}
-- type: Enum (NeighborHelp/Happening/Charity/MassEvent) {type of the event}
-- userID: number {ID of the user who added given marker}
+- `id` *integer* - ID of the marker
+- `latitude` *double* - Latitude of the marker
+- `longitude` *double* - Longitude of the number
+- `title` *string* - Title of the marker
+- `description` *string* - Marker's description
+- `type` *Enum (NeighborHelp/Happening/Charity/MassEvent)* - Type of the event 
+- `addTime` *unix timestamp* - UNIX timestamp of the time when marker was added
+- `startTime` *unix timestamp (OPTIONAL)* - UNIX timestamp of the time when event starts
+- `endTime`  *unix timestamp (OPTIONAL)* - UNIX timestamp of the time when event ends
+- `address` *Address* - Marker's location represented by Address object
+- `contactInfo` *ContactInfo* - Contact info of the marker's creator
+- `userID` *integer* - ID of the user who created the marker
 
 ## [GET]/user_markers:
 

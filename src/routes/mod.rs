@@ -64,7 +64,7 @@ pub async fn get_marker(db: &rocket::State<MySqlPool>, id: u32) -> SomsiadResult
 pub async fn get_markers_by_city(
     db: &rocket::State<MySqlPool>,
     city: &str,
-) -> SomsiadResult<Vec<Marker>> {
+) -> SomsiadResult<Vec<FullMarkerOwned>> {
     match show_markers_by_city(db, city).await {
         Ok(markers) => SomsiadStatus::ok(markers),
         Err(e) => {
@@ -80,7 +80,7 @@ pub async fn get_markers_by_dist(
     lat: f64,
     long: f64,
     dist: u32,
-) -> SomsiadResult<Vec<MarkerWithDist>> {
+) -> SomsiadResult<Vec<FullMarkerOwnedWithDist>> {
     match show_markers_by_dist(db, lat, long, dist).await {
         Ok(markers) => SomsiadStatus::ok(markers),
         Err(e) => {
@@ -90,7 +90,7 @@ pub async fn get_markers_by_dist(
     }
 }
 #[get("/markers")]
-pub async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Vec<Marker>> {
+pub async fn get_markers(db: &rocket::State<MySqlPool>) -> SomsiadResult<Vec<FullMarkerOwned>> {
     match show_markers(db).await {
         Ok(markers) => SomsiadStatus::ok(markers),
         Err(e) => {
