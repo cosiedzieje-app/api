@@ -41,7 +41,7 @@ pub struct FullMarker<'r> {
     title: &'r str,
     description: &'r str,
     #[serde(rename = "type")]
-    event_type: EventType,
+    r#type: EventType,
     #[serde(with = "ts_seconds")]
     #[serde(rename = "addTime")]
     #[serde(default)]
@@ -274,7 +274,7 @@ impl<'r> FullMarker<'r> {
             self.longitude,
             self.title,
             self.description,
-            self.event_type,
+            self.r#type,
             chrono::offset::Utc::now(),
             self.start_time,
             self.end_time,
