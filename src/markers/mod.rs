@@ -146,13 +146,15 @@ pub async fn delete_marker(
 
     Ok(marker)
 }
-pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<Marker>> {
+
+pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<FullMarkerOwned>> {
     let markers = sqlx::query_as!(
-        Marker,
+        FullMarkerOwned,
         r#"
-    SELECT id, latitude, longitude, title, type as `event_type: EventType`,user_id
-    FROM markers
-    "#
+        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time,start_time, end_time,
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
+        FROM markers
+        "#
     )
     .fetch_all(db)
     .await?;
