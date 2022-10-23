@@ -135,9 +135,11 @@ pub struct FullMarkerOwnedWithDist {
     end_time: Option<DateTime<Utc>>,
     address: sqlx::types::Json<AddressOwned>,
     #[serde(rename = "contactInfo")]
-    contact_info: ContactInfo,
+    contact_info: sqlx::types::Json<ContactInfo>,
     #[serde(rename = "distanceInKm")]
     distance_in_km: Option<f64>,
+    #[serde(rename = "userID")]
+    user_id: i32
 }
 
 pub async fn delete_marker(
