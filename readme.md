@@ -11,8 +11,9 @@ DATABASE_URL = "mysql://nazwaUzytkowniak:Haslo@localhost/bazaDanych"
 [default]
 secret_key = ""
 ```
-5. Skompiluj i uruchom program za pomocą: `cargo run --release`
-6. Po kompilacji strona powinna działać na `localhost:8000`
+5. Zaimportuj tabelę z /sql/structure.sql do bazy danych MySQL i upewnij się że uruchomiony jest serwer MySQL 
+6. Skompiluj i uruchom program za pomocą: `cargo run --release`
+7. Po kompilacji strona powinna działać na `localhost:8000`
 
 # Endpoints:
 
