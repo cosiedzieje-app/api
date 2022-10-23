@@ -112,6 +112,36 @@ pub struct FullMarkerOwned {
     user_id: i32,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct FullMarkerOwnedWithDist {
+    id: u32,
+    latitude: f64,
+    longitude: f64,
+    title: String,
+    description: String,
+    #[serde(rename = "type")]
+    event_type: EventType,
+    #[serde(with = "ts_seconds")]
+    #[serde(rename = "addTime")]
+    #[serde(default)]
+    add_time: DateTime<Utc>,
+    #[serde(with = "ts_seconds_option")]
+    #[serde(rename = "startTime")]
+    #[serde(default)]
+    start_time: Option<DateTime<Utc>>,
+    #[serde(with = "ts_seconds_option")]
+    #[serde(rename = "endTime")]
+    #[serde(default)]
+    end_time: Option<DateTime<Utc>>,
+    address: sqlx::types::Json<AddressOwned>,
+    #[serde(rename = "contactInfo")]
+    contact_info: sqlx::types::Json<ContactInfo>,
+    #[serde(rename = "distanceInKm")]
+    distance_in_km: Option<f64>,
+    #[serde(rename = "userID")]
+    user_id: i32
+}
+
 pub async fn delete_marker(
     db: &sqlx::MySqlPool,
     user_id: u32,
@@ -162,14 +192,14 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<FullMarker
     Ok(markers)
 }
 
-pub async fn show_markers_by_city(db: &sqlx::MySqlPool, city: &str) -> anyhow::Result<Vec<Marker>> {
+pub async fn show_markers_by_city(db: &sqlx::MySqlPool, city: &str) -> anyhow::Result<Vec<FullMarkerOwned>> {
     let markers = sqlx::query_as!(
-        Marker,
+        FullMarkerOwned,
         r#"
-    SELECT id, latitude, longitude, title, type as `event_type: EventType`,user_id
-    FROM markers
-    WHERE JSON_EXTRACT(address,"$.city") = ?
-    "#,
+        SELECT id, latitude, longitude, title, description, type as `type: EventType`, add_time,start_time, end_time,
+        address as `address: sqlx::types::Json<AddressOwned>`, contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', user_id
+        FROM markers WHERE JSON_EXTRACT(address,"$.city") = ?
+        "#,
         city
     )
     .fetch_all(db)
@@ -183,14 +213,14 @@ pub async fn show_markers_by_dist(
     x: f64,
     y: f64,
     dist: u32,
-) -> anyhow::Result<Vec<MarkerWithDist>> {
+) -> anyhow::Result<Vec<FullMarkerOwnedWithDist>> {
     // SELECT id, latitude, longitude, title, type as `event_type: EventType`,user_id
     // Thanks for the formula: http://www.plumislandmedia.net/mysql/haversine-mysql-nearest-loc/
     let markers = sqlx::query_as!(
-        MarkerWithDist,
+        FullMarkerOwnedWithDist,
         r#"
         SELECT 
-        z.id, z.latitude, z.longitude, z.title, z.type as `event_type: EventType`,user_id,
+        z.id, z.latitude, z.longitude, z.title, z.description, z.type as `event_type: EventType`, z.add_time, z.start_time, z.end_time, z.address as `address: sqlx::types::Json<AddressOwned>`, z.contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', z.user_id,
         p.distance_unit
                 * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(p.latpoint))
                 * COS(RADIANS(z.latitude))
