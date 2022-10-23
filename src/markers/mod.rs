@@ -34,31 +34,6 @@ pub struct ContactInfo {
     method: ContactMethod,
 }
 
-#[derive(Serialize)]
-pub struct Marker {
-    id: u32,
-    latitude: f64,
-    longitude: f64,
-    title: String,
-    #[serde(rename = "type")]
-    event_type: EventType,
-    #[serde(rename = "userID")]
-    user_id: i32,
-}
-
-#[derive(Serialize)]
-pub struct MarkerWithDist {
-    id: u32,
-    latitude: f64,
-    longitude: f64,
-    title: String,
-    #[serde(rename = "type")]
-    event_type: EventType,
-    #[serde(rename = "userID")]
-    user_id: i32,
-    distance_in_km: Option<f64>,
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct FullMarker<'r> {
     latitude: f64,
@@ -120,7 +95,7 @@ pub struct FullMarkerOwnedWithDist {
     title: String,
     description: String,
     #[serde(rename = "type")]
-    event_type: EventType,
+    r#type: EventType,
     #[serde(with = "ts_seconds")]
     #[serde(rename = "addTime")]
     #[serde(default)]
@@ -139,7 +114,7 @@ pub struct FullMarkerOwnedWithDist {
     #[serde(rename = "distanceInKm")]
     distance_in_km: Option<f64>,
     #[serde(rename = "userID")]
-    user_id: i32
+    user_id: i32,
 }
 
 pub async fn delete_marker(
@@ -192,7 +167,10 @@ pub async fn show_markers(db: &sqlx::MySqlPool) -> anyhow::Result<Vec<FullMarker
     Ok(markers)
 }
 
-pub async fn show_markers_by_city(db: &sqlx::MySqlPool, city: &str) -> anyhow::Result<Vec<FullMarkerOwned>> {
+pub async fn show_markers_by_city(
+    db: &sqlx::MySqlPool,
+    city: &str,
+) -> anyhow::Result<Vec<FullMarkerOwned>> {
     let markers = sqlx::query_as!(
         FullMarkerOwned,
         r#"
@@ -219,8 +197,8 @@ pub async fn show_markers_by_dist(
     let markers = sqlx::query_as!(
         FullMarkerOwnedWithDist,
         r#"
-        SELECT 
-        z.id, z.latitude, z.longitude, z.title, z.description, z.type as `event_type: EventType`, z.add_time, z.start_time, z.end_time, z.address as `address: sqlx::types::Json<AddressOwned>`, z.contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', z.user_id,
+        SELECT z.id, z.latitude, z.longitude, z.title, z.description, z.type as `type: EventType`, z.add_time,start_time, z.end_time,
+        z.address as `address: sqlx::types::Json<AddressOwned>`, z.contact_info as 'contact_info: sqlx::types::Json<ContactInfo>', z.user_id,
         p.distance_unit
                 * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(p.latpoint))
                 * COS(RADIANS(z.latitude))
