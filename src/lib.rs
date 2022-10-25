@@ -3,6 +3,7 @@ pub mod fairings;
 pub mod markers;
 pub mod routes;
 pub mod users;
+pub mod guards;
 
 use rocket::{http::Status, outcome::IntoOutcome, request, Request};
 /* Uses */

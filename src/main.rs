@@ -1,8 +1,7 @@
+use rocket::fs::{FileServer, relative};
 use dotenv::dotenv;
-use rocket::fs::relative;
-use rocket::fs::FileServer;
 use somsiad_api::fairings;
-use somsiad_api::routes::*;
+use somsiad_api::routes;
 use sqlx::pool::PoolOptions;
 use sqlx::MySql;
 use std::env;
@@ -24,35 +23,60 @@ async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .attach(fairings::CORS)
         .manage(db)
-        .mount("/", FileServer::from(relative!("static")).rank(1))
         .register(
             "/",
             catchers![
-                spa_catcher
+                routes::root::spa_catcher,
+                routes::root::maintenance_catch,
+                routes::root::default_catcher
             ]
-        )
-        .mount(
-            "/api",
-            routes![
-                login,
-                register,
-                logout,
-                get_user_data,
-                user_data,
-                is_logged,
-                get_markers,
-                add_marker,
-                remove_marker,
-                get_user_markers,
-                get_markers_by_city,
-                get_markers_by_dist,
-            ],
         )
         .register(
             "/api", 
             catchers![
-                options_catcher, 
-                unauthorized_catcher
+                routes::api::options_catcher, 
+                routes::api::unauthorized_catcher,
+                routes::api::maintenance_catcher
+            ]
+        )
+        .register(
+            "/positionstack",
+            catchers![
+                routes::positionstack::default_catcher,
+                routes::positionstack::maintenance_catcher
+            ]
+        )
+        .mount(
+            "/", 
+            routes![
+                routes::root::get_page
+            ]
+        )
+        .mount(
+            "/",
+            FileServer::from(relative!("static"))
+        )
+        .mount(
+            "/api",
+            routes![
+                routes::api::login,
+                routes::api::register,
+                routes::api::logout,
+                routes::api::get_user_data,
+                routes::api::user_data,
+                routes::api::is_logged,
+                routes::api::get_markers,
+                routes::api::add_marker,
+                routes::api::remove_marker,
+                routes::api::get_user_markers,
+                routes::api::get_markers_by_city,
+                routes::api::get_markers_by_dist,
+            ],
+        )
+        .mount(
+            "/positionstack",
+            routes![
+                routes::positionstack::get_positionstack
             ]
         )
         .launch()
