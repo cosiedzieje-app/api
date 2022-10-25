@@ -1,3 +1,4 @@
+use std::path::{PathBuf, Path};
 use crate::markers::*;
 use crate::users::login::*;
 use crate::users::register::*;
@@ -9,6 +10,7 @@ use rocket::{
     info_, post, put,
     serde::json::Json,
     warn_, Request,
+    fs::{NamedFile, relative}
 };
 use sqlx::MySqlPool;
 use validator::ValidationErrorsKind::*;
@@ -27,6 +29,25 @@ pub fn options_catcher<'a>(status: Status, request: &Request) -> (Status, Somsia
             status,
             SomsiadStatus::error(format!("Ścieżka {} nie istnieje!", request.uri()).as_str()),
         )
+    }
+}
+
+#[catch(404)]
+pub async fn spa_catcher() -> Result<(Status, NamedFile), (Status, SomsiadResult<&'static str>)> {
+    let path = Path::new(relative!("static"))
+        .join("index.html");
+
+    let file = NamedFile::open(path).await;
+
+    match file {
+        Ok(f) => Ok((
+            Status::Ok,
+            f
+        )),
+        Err(_) => Err((
+            Status::NotFound,
+            SomsiadStatus::error("Wystąpił błąd przy wczytywaniu strony. Spróbuj ponownie. Jeśli problem się powtórzy, skontaktuj się z administratorem")
+        ))
     }
 }
 

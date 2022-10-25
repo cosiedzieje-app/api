@@ -1,107 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-     <script>
-        (async () => {
-            const rawResponse = await fetch('/register', {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(
-                  {
-		    login:{
-			email: 'ex@gmail.com',
-                        password: "toor"
-		    },
-                    username: "riot",
-                    name: "Paweł",
-                    surname: "Kowałski",
-                    sex: 'Other',
-                    address: {
-                      postalCode: "4789",
-                      street: "Jagięllonska",
-                      city: "Sośnowiec",
-                      number: "12",
-                    }
-                  }
-                )
-              }
-            );
-            const content = await rawResponse.json();
-          
-            console.log("Register response: ",content);
-          })();
-    </script>
-
-    <script>
-        (async () => {
-            const rawResponse = await fetch('/login', {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(
-                {
-			email: 'ex@gmail.com',
-			password: "toor"})
-                }
-            );
-            const content = await rawResponse.json();
-          
-            console.log("Login response: ", content);
-          })();
-    </script>
-    <script>
-        (async () => {
-            const rawResponse = await fetch('/markers', {
-              method: 'PUT',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(
-		      {
-				latitude:50.21212,
-				longitude:1.12121,title:"pomoc dzieciom",
-				description:"sasas",
-				type:"NeighborHelp",
-			        startTime: 1667784387,
-				endTime:1666784387,
-				address: {
-					postalCode: "41-207",
-					city: "Sośnowiec",
-					street: "Jagiellonska",
-					number: "13",
-				},
-			        contactInfo:{
-					name: "Paweł",
-					surname: "Kowalksi",
-					address: {
-						postalCode: "41-207",
-						city: "Sosnowiec",
-						street: "Jagiellonska",
-						number: "13",
-					},
-					method:{
-						type: "PhoneNumber",
-						val: "123456789"
-					}
-			        }})
-                }
-            );
-            const content = await rawResponse.json();
-          
-            console.log("add_marker response: ", content);
-          })();
-    </script>
-</body>
+<html lang="pl">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Jakub Jastrząb, Marcel Maciaszczyk, Marcin Mikuła" />
+    <meta name="keywords" content="hack heroes, co się dzieje, cosiędzieje, somsiad, pomoc sąsiedzka, codeweek 2022" />
+    <meta name="description" content="Pomoc sąsiedzka w zasięgu twojej ręki!" />
+    <title>CoSięDzieje</title>
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index.220e30a1.js"></script>
+    <link rel="stylesheet" href="/assets/index.f968a5e2.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    
+  </body>
 </html>

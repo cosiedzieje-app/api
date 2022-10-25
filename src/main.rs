@@ -25,6 +25,12 @@ async fn main() -> Result<(), rocket::Error> {
         .attach(fairings::CORS)
         .manage(db)
         .mount("/", FileServer::from(relative!("static")).rank(1))
+        .register(
+            "/",
+            catchers![
+                spa_catcher
+            ]
+        )
         .mount(
             "/api",
             routes![
@@ -42,7 +48,13 @@ async fn main() -> Result<(), rocket::Error> {
                 get_markers_by_dist,
             ],
         )
-        .register("/", catchers![options_catcher, unauthorized_catcher])
+        .register(
+            "/api", 
+            catchers![
+                options_catcher, 
+                unauthorized_catcher
+            ]
+        )
         .launch()
         .await?;
 
