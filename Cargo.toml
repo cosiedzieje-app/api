@@ -20,3 +20,4 @@ serde_json = {version = "1.0.86", features = ["raw_value"] }
 sqlx = { version = "0.6.2", features = ["runtime-tokio-rustls", "mysql", "macros", "chrono", "json"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4.22", features = ["serde"] }
+reqwest = "0.11.12"
